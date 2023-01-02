@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Data COVID 19</string>
+
+    <string-array name="provinsi">
+        <item>DKI Jakarta</item>
+        <item>Jawa Barat</item>
+        <item>Jawa Tengah</item>
+        <item>Jawa Timur</item>
+        <item>Banten</item>
+        <item>DAERAH ISTIMEWA YOGYAKARTA</item>
+    </string-array>
+</resources>
