@@ -1,5 +1,6 @@
 package com.systudio.datacovid19.view
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -26,7 +27,10 @@ class MainActivity : AppCompatActivity() {
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                Toast.makeText(this@MainActivity, "Test", Toast.LENGTH_SHORT)
+                val intent  = Intent(applicationContext,BarChartActivity::class.java)
+                intent.putExtra("id",p2)
+                startActivity(intent)
+
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 TODO("Not yet implemented")

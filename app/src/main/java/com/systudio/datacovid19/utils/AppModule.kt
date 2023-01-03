@@ -14,7 +14,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    const val baseURL = "https://data.covid19.go.id/public/api/prov.json"
+    const val baseURL = "https://data.covid19.go.id/public/api/"
 
     @Provides
     @Singleton
