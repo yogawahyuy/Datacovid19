@@ -10,5 +10,29 @@
         android:id="@+id/barchart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/groupbarchart"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/stackbarchart"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lineChart"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/piechart"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+    <com.github.mikephil.charting.charts.CombinedChart
+        android:id="@+id/combinedChart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

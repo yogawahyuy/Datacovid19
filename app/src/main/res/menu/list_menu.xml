@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/barchartmenu" android:title="Bar Chart"/>
+    <item android:id="@+id/groupchartmenu" android:title="Group Chart" />
+    <item android:id="@+id/stackbarchartmenu" android:title="Stack Bar Chart"/>
+    <item android:id="@+id/linechartmenu" android:title="Line Chart"/>
+    <item android:id="@+id/piechartmenu" android:title="Pie Chart"/>
+    <item android:id="@+id/combinedChartmenu" android:title="Combined Chart"/>
+</menu>
