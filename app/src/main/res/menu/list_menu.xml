@@ -6,4 +6,5 @@
     <item android:id="@+id/linechartmenu" android:title="Line Chart"/>
     <item android:id="@+id/piechartmenu" android:title="Pie Chart"/>
     <item android:id="@+id/combinedChartmenu" android:title="Combined Chart"/>
+    <item android:id="@+id/candlestickmenu" android:title="Candle Stick Chart"/>
 </menu>
