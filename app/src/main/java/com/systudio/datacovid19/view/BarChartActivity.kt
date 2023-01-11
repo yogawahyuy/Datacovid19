@@ -15,21 +15,47 @@ import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.*
+import com.github.mikephil.charting.formatter.ColorFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.StackedValueFormatter
+import com.github.mikephil.charting.utils.ColorTemplate
 import com.github.mikephil.charting.utils.MPPointF
 import com.systudio.datacovid19.R
 import com.systudio.datacovid19.model.ListData
 import com.systudio.datacovid19.utils.MainViewModel
+import com.systudio.datacovid19.utils.marker.BarChartMarkerView
+import com.systudio.datacovid19.utils.marker.LineChartMarker
+import com.systudio.datacovid19.utils.marker.StackBarChartMarker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_bar_chart.*
+import kotlinx.android.synthetic.main.activity_bar_chart.view.*
+import kotlinx.android.synthetic.main.custom_legend_filter.*
+import kotlinx.android.synthetic.main.custom_legend_filter.dirawatTv
+import kotlinx.android.synthetic.main.custom_legend_filter.lin_dirawat
+import kotlinx.android.synthetic.main.custom_legend_filter.lin_meninggal
+import kotlinx.android.synthetic.main.custom_legend_filter.meninggalTv
+import kotlinx.android.synthetic.main.custom_legend_filter.rel_custom_legend
+import kotlinx.android.synthetic.main.custom_legend_filter.sembuhTv
+import kotlinx.android.synthetic.main.custom_totaldata_chart.*
+import kotlinx.android.synthetic.main.layout_combine_chart.*
+import kotlinx.android.synthetic.main.layout_combine_chart.view.*
+import kotlinx.android.synthetic.main.layout_line_chart.*
+import kotlinx.android.synthetic.main.layout_line_chart.view.*
+import kotlinx.android.synthetic.main.layout_pie_chart.view.*
+import kotlinx.android.synthetic.main.layout_stackbar_chart.*
+import kotlinx.android.synthetic.main.layout_stackbar_chart.view.*
 
 
 @AndroidEntryPoint
 class BarChartActivity : AppCompatActivity() {
+    lateinit var ld : List<ListData>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bar_chart)
         setupVM()
+        rel_custom_legend.visibility = View.GONE
+        tv_totaldata.visibility = View.GONE
+        tv_totalperprovinsi.visibility = View.GONE
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -39,68 +65,46 @@ class BarChartActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId==R.id.barchartmenu){
-            barchart.visibility = View.VISIBLE
-            groupbarchart.visibility = View.GONE
-            lineChart.visibility = View.GONE
-            piechart.visibility = View.GONE
-            stackbarchart.visibility = View.GONE
-            combinedChart.visibility = View.GONE
-            candleStickChart.visibility = View.GONE
+            cardview_barchart.visibility = View.VISIBLE
+            layout_combinechart.visibility = View.GONE
+            layout_stackbar.visibility = View.GONE
+            layout_piechart.visibility = View.GONE
+            layout_linechart.visibility = View.GONE
         }
-        if (item.itemId==R.id.groupchartmenu){
-            barchart.visibility = View.GONE
-            groupbarchart.visibility = View.VISIBLE
-            lineChart.visibility = View.GONE
-            piechart.visibility = View.GONE
-            stackbarchart.visibility = View.GONE
-            combinedChart.visibility = View.GONE
-            candleStickChart.visibility = View.GONE
-        }
+       // if (item.itemId==R.id.groupchartmenu){ }
         if (item.itemId==R.id.linechartmenu){
-            barchart.visibility = View.GONE
-            groupbarchart.visibility = View.GONE
-            lineChart.visibility = View.VISIBLE
-            piechart.visibility = View.GONE
-            stackbarchart.visibility = View.GONE
-            combinedChart.visibility = View.GONE
-            candleStickChart.visibility = View.GONE
+            cardview_barchart.visibility = View.GONE
+            layout_combinechart.visibility = View.GONE
+            layout_stackbar.visibility = View.GONE
+            layout_piechart.visibility = View.GONE
+            layout_linechart.visibility = View.VISIBLE
+            setupLineChart(ld)
         }
         if (item.itemId==R.id.piechartmenu){
-            barchart.visibility = View.GONE
-            groupbarchart.visibility = View.GONE
-            lineChart.visibility = View.GONE
-            piechart.visibility = View.VISIBLE
-            stackbarchart.visibility = View.GONE
-            combinedChart.visibility = View.GONE
-            candleStickChart.visibility = View.GONE
+            cardview_barchart.visibility = View.GONE
+            layout_combinechart.visibility = View.GONE
+            layout_stackbar.visibility = View.GONE
+            layout_piechart.visibility = View.VISIBLE
+            layout_linechart.visibility = View.GONE
+            setupPieChart(ld)
         }
         if (item.itemId == R.id.stackbarchartmenu){
-            barchart.visibility = View.GONE
-            groupbarchart.visibility = View.GONE
-            lineChart.visibility = View.GONE
-            piechart.visibility = View.GONE
-            stackbarchart.visibility = View.VISIBLE
-            combinedChart.visibility = View.GONE
-            candleStickChart.visibility = View.GONE
+            cardview_barchart.visibility = View.GONE
+            layout_combinechart.visibility = View.GONE
+            layout_stackbar.visibility = View.VISIBLE
+            layout_piechart.visibility = View.GONE
+            layout_linechart.visibility = View.GONE
+            setupStackedBarChart(ld)
         }
         if (item.itemId == R.id.combinedChartmenu){
-            barchart.visibility = View.GONE
-            groupbarchart.visibility = View.GONE
-            lineChart.visibility = View.GONE
-            piechart.visibility = View.GONE
-            stackbarchart.visibility = View.GONE
-            combinedChart.visibility = View.VISIBLE
-            candleStickChart.visibility = View.GONE
+            cardview_barchart.visibility = View.GONE
+            layout_combinechart.visibility = View.VISIBLE
+            layout_stackbar.visibility = View.GONE
+            layout_piechart.visibility = View.GONE
+            layout_linechart.visibility = View.GONE
+            setupCombinedChart(ld)
         }
-        if (item.itemId == R.id.candlestickmenu){
-            barchart.visibility = View.GONE
-            groupbarchart.visibility = View.GONE
-            lineChart.visibility = View.GONE
-            piechart.visibility = View.GONE
-            stackbarchart.visibility = View.GONE
-            combinedChart.visibility = View.GONE
-            candleStickChart.visibility = View.VISIBLE
-        }
+        //if (item.itemId == R.id.candlestickmenu){ }
         return super.onOptionsItemSelected(item)
     }
     private fun setupVM(){
@@ -108,12 +112,7 @@ class BarChartActivity : AppCompatActivity() {
         viewModel.fetchLiveData().observe(this, Observer {
             if (it!=null){
                 setupBarchart(it)
-                setupGroupChart(it)
-                setupLineChart(it)
-                setupPieChart(it)
-                setupStackedBarChart(it)
-                setupCombinedChart(it)
-                setupCandleStickChart(it)
+                ld = it
             }
         })
         viewModel.fetchAllData()
@@ -137,6 +136,14 @@ class BarChartActivity : AppCompatActivity() {
         barchart.data = BarData(barDataSet)
         barchart.animateXY(100,500)
         barchart.xAxis?.valueFormatter = IndexAxisValueFormatter(label)
+
+        val legend = barchart.legend
+        legend.isEnabled = false
+        val rightAxis = barchart.axisRight
+        rightAxis.isEnabled = false
+        val marker = BarChartMarkerView(this,R.layout.custom_marker_view,label)
+        barchart.marker = marker
+
         //barChart.invalidate()
 
     }
@@ -201,68 +208,137 @@ class BarChartActivity : AppCompatActivity() {
             label.add(listData.get(i).key)
         }
         groupbarchart.xAxis?.valueFormatter = IndexAxisValueFormatter(label)
+        val marker = BarChartMarkerView(this,R.layout.custom_marker_view,label)
+        groupbarchart.marker = marker
     }
 
     private fun setupStackedBarChart(listData: List<ListData>){
-        val legend = stackbarchart.legend
-        legend.isEnabled = true
-        legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
-        legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
-        legend.orientation = Legend.LegendOrientation.HORIZONTAL
+        val legend = layout_stackbar.stackbarchart.legend
+        legend.isEnabled = false
 
+        var totalSembuh = 0
+        var totalMeninggal = 0
+        var totalDirawat = 0
+        var totalKasus = 0
         val sembuh = ArrayList<BarEntry>()
         for (i in 0..5 ){
             sembuh.add(BarEntry(i.toFloat(),listData.get(i).jumlah_sembuh.toFloat()))
+            totalSembuh += listData.get(i).jumlah_sembuh
         }
         val meninggal = ArrayList<BarEntry>()
         for (i in 0..5 ){
             meninggal.add(BarEntry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
+            totalMeninggal += listData.get(i).jumlah_meninggal
         }
         val dirawat = ArrayList<BarEntry>()
         for (i in 0..5 ){
             dirawat.add(BarEntry(i.toFloat(),listData.get(i).jumlah_dirawat.toFloat()))
+            totalDirawat += listData.get(i).jumlah_dirawat
         }
-
+        //add total on top chart
+        totalKasus += totalSembuh + totalDirawat + totalMeninggal
+        //val totaldatatext = "total sembuh : " + totalSembuh+ ", Total dirawat : " + totalDirawat +", Total Meninggal : "+totalMeninggal+", Total Kasus : "+totalKasus
+        tv_stack_totaldata.text =  "Total Kasus :"
+        val isiTv = "DKI Jakarta : " + listData.get(0).jumlah_kasis + ", Jawa Barat : "+ listData.get(1).jumlah_kasis+", Jawa Tengah : "+ listData.get(2).jumlah_kasis +
+                ", Jawa Timur : "+ listData.get(3).jumlah_kasis + ", Banten : "+ listData.get(4).jumlah_kasis +", Yogyakarta : "+listData.get(5).jumlah_kasis
+        tv_stack_totalperprovinsi.text = isiTv
         val sembuhBarDataSet = BarDataSet(sembuh,"Sembuh")
         sembuhBarDataSet.color = Color.GREEN
         val meninggalBarDataSet = BarDataSet(meninggal,"Meninggal")
         meninggalBarDataSet.color = Color.RED
         val dirawatBarDataSet = BarDataSet(dirawat,"dirawat")
         dirawatBarDataSet.color = Color.BLUE
+        dirawatBarDataSet.setDrawValues(false)
 
-        stackbarchart.description.isEnabled = false
-        stackbarchart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        stackbarchart.setTouchEnabled(true)
-        stackbarchart.isDragEnabled = true
-        stackbarchart.setScaleEnabled(true)
-        stackbarchart.data = BarData(sembuhBarDataSet,dirawatBarDataSet,meninggalBarDataSet)
-        stackbarchart.animateXY(200,500)
+        layout_stackbar.stackbarchart.description.isEnabled = false
+        layout_stackbar.stackbarchart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+        layout_stackbar.stackbarchart.axisRight.isEnabled = false
+        layout_stackbar.stackbarchart.axisLeft.axisMinimum = 0f
+        layout_stackbar.stackbarchart.setTouchEnabled(true)
+        layout_stackbar.stackbarchart.isDragEnabled = true
+        layout_stackbar.stackbarchart.setScaleEnabled(true)
+        layout_stackbar.stackbarchart.data = BarData(sembuhBarDataSet,dirawatBarDataSet,meninggalBarDataSet)
+        layout_stackbar.stackbarchart.animateXY(200,500)
+
+        val label = ArrayList<String>()
+        for (i in 0..5){
+            label.add(listData.get(i).key)
+        }
+        layout_stackbar.stackbarchart.xAxis?.valueFormatter = IndexAxisValueFormatter(label)
+        layout_stackbar.stackbarchart.xAxis.isGranularityEnabled = true
+        layout_stackbar.stackbarchart.xAxis.granularity = 2f
+        val marker = StackBarChartMarker(this,R.layout.custom_marker_view,label)
+        layout_stackbar.stackbarchart.marker = marker
+
+        // legend filter
+        var state = 0
+        lin_sembuh_stack.setOnClickListener {
+            if (state==0) {
+                sembuhBarDataSet.isVisible = false
+                layout_stackbar.stackbarchart.invalidate()
+                sembuhTv_stack.paintFlags = sembuhTv.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+                state = 1
+            }else {
+                sembuhBarDataSet.isVisible = true
+                layout_stackbar.stackbarchart.invalidate()
+                sembuhTv_stack.paintFlags = sembuhTv.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                state = 0
+            }
+        }
+        var stateDirawat = 0
+        lin_dirawat_stack.setOnClickListener {
+            if (stateDirawat==0){
+                dirawatBarDataSet.isVisible = false
+                layout_stackbar.stackbarchart.invalidate()
+                dirawatTv_stack.paintFlags = dirawatTv.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+                stateDirawat = 1
+            }else{
+                dirawatBarDataSet.isVisible = true
+                layout_stackbar.stackbarchart.invalidate()
+                dirawatTv_stack.paintFlags = dirawatTv.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                stateDirawat = 0
+            }
+        }
+        var stateMeninggal = 0
+        lin_meninggal_stack.setOnClickListener {
+            if (stateMeninggal==0){
+                meninggalBarDataSet.isVisible = false
+                layout_stackbar.stackbarchart.invalidate()
+                meninggalTvstack.paintFlags = meninggalTv.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+                stateMeninggal = 1
+            }else{
+                meninggalBarDataSet.isVisible = true
+                layout_stackbar.stackbarchart.invalidate()
+                meninggalTvstack.paintFlags = meninggalTv.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                stateMeninggal = 0
+            }
+        }
     }
 
     private fun setupLineChart(listData: List<ListData>){
-//        val kasus = ArrayList<Entry>()
-//        for (i in 0..5 ){
-//            kasus.add(BarEntry(i.toFloat(),listData.get(i).jumlah_kasis.toFloat()))
-//        }
+        var totalSembuh = 0
+        var totalMeninggal = 0
+        var totalDirawat = 0
+        var totalKasus = 0
         val sembuh = ArrayList<Entry>()
         for (i in 0..5 ){
             Log.d("setuplinechart", "setupLineChart: "+listData.get(i).jumlah_sembuh)
             sembuh.add(Entry(i.toFloat(),listData.get(i).jumlah_sembuh.toFloat()))
+            totalSembuh += listData.get(i).jumlah_sembuh
         }
         val meninggal = ArrayList<Entry>()
         for (i in 0..5 ){
             meninggal.add(Entry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
+            totalMeninggal += listData.get(i).jumlah_meninggal
         }
         val dirawat = ArrayList<Entry>()
         for (i in 0..5 ){
             dirawat.add(Entry(i.toFloat(),listData.get(i).jumlah_dirawat.toFloat()))
+            totalDirawat += listData.get(i).jumlah_dirawat
         }
-
-//        val kasusLineDataSet = LineDataSet(kasus,"Kasus")
-//        kasusLineDataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
-//        kasusLineDataSet.color = Color.BLUE
-//        kasusLineDataSet.circleRadius = 5f
-//        kasusLineDataSet.setCircleColor(Color.BLUE)
+        totalKasus += totalSembuh + totalDirawat + totalMeninggal
+        tv_line_totalperprovinsi.visibility = View.GONE
+        tv_line_totaldata.text = "total sembuh : " + totalSembuh+ ", Total dirawat : " + totalDirawat +", Total Meninggal : "+totalMeninggal+", Total Kasus : "+totalKasus
 
         val sembuhLineDataset = LineDataSet(sembuh,"Sembuh")
         sembuhLineDataset.mode = LineDataSet.Mode.CUBIC_BEZIER
@@ -272,7 +348,7 @@ class BarChartActivity : AppCompatActivity() {
 
         val dirawatLineDataSet = LineDataSet(dirawat,"dirawat")
         dirawatLineDataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
-        dirawatLineDataSet.color = Color.GRAY
+        dirawatLineDataSet.color = Color.BLUE
         dirawatLineDataSet.circleRadius = 5f
         dirawatLineDataSet.setCircleColor(Color.GRAY)
 
@@ -282,60 +358,113 @@ class BarChartActivity : AppCompatActivity() {
         meninggalLineDataset.circleRadius = 5f
         meninggalLineDataset.setCircleColor(Color.RED)
 
-        val legend = lineChart.legend
-        legend.isEnabled = true
+        val legend = layout_linechart.lineChart.legend
+        legend.isEnabled = false
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP)
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER)
         legend.setOrientation(Legend.LegendOrientation.HORIZONTAL)
         legend.setDrawInside(false)
 
-        lineChart.description.isEnabled = false
-        lineChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        lineChart.data = LineData( sembuhLineDataset, dirawatLineDataSet, meninggalLineDataset)
-        lineChart.animateXY(100, 500)
+        layout_linechart.lineChart.description.isEnabled = false
+        lineChart.axisLeft.axisMinimum = 0f
+        lineChart.xAxis.granularity = 2f
+        layout_linechart.lineChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+        layout_linechart.lineChart.data = LineData( sembuhLineDataset, dirawatLineDataSet, meninggalLineDataset)
+        layout_linechart.lineChart.animateXY(100, 500)
+        val rightAxis = layout_linechart.lineChart.axisRight
+        rightAxis.isEnabled = false
+
 
         val label = ArrayList<String>()
         for (i in 0..5){
             label.add(listData.get(i).key)
         }
-        lineChart.xAxis?.valueFormatter = IndexAxisValueFormatter(label)
+        layout_linechart.lineChart.xAxis?.valueFormatter = IndexAxisValueFormatter(label)
+        val marker = LineChartMarker(this,R.layout.custom_marker_view)
+        layout_linechart.lineChart.marker = marker
+
+        //legend filter
+        var state = 0
+        lin_chartsembuh.setOnClickListener {
+            if (state==0) {
+                sembuhLineDataset.isVisible = false
+                layout_linechart.lineChart.invalidate()
+                sembuhTvline.paintFlags = sembuhTv.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+                state = 1
+            }else {
+                sembuhLineDataset.isVisible = true
+                layout_linechart.lineChart.invalidate()
+                sembuhTvline.paintFlags = sembuhTv.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                state = 0
+            }
+        }
+        var stateDirawat = 0
+        lin_chartdirawat.setOnClickListener {
+            if (stateDirawat==0){
+                dirawatLineDataSet.isVisible = false
+                layout_linechart.lineChart.invalidate()
+                dirawatTvline.paintFlags = dirawatTv.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+                stateDirawat = 1
+            }else{
+                dirawatLineDataSet.isVisible = true
+                layout_linechart.lineChart.invalidate()
+                dirawatTvline.paintFlags = dirawatTv.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                stateDirawat = 0
+            }
+        }
+        var stateMeninggal = 0
+        lin_chartmeninggal.setOnClickListener {
+            if (stateMeninggal==0){
+                meninggalLineDataset.isVisible = false
+                layout_linechart.lineChart.invalidate()
+                meninggalTvstack.paintFlags = meninggalTv.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+                stateMeninggal = 1
+            }else{
+                meninggalLineDataset.isVisible = true
+                layout_linechart.lineChart.invalidate()
+                meninggalTvstack.paintFlags = meninggalTv.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                stateMeninggal = 0
+            }
+        }
 
     }
 
     private fun setupPieChart(listData: List<ListData>){
-        piechart.description.isEnabled = false
-        piechart.setExtraOffsets(5f,10f,5f,5f)
-        piechart.dragDecelerationFrictionCoef=0.95f
-        piechart.centerText = "Jumlah Sembuh"
-        piechart.setCenterTextColor(Color.BLACK)
-        piechart.setDrawCenterText(true)
+        layout_piechart.piechart.description.isEnabled = false
+        layout_piechart.piechart.setExtraOffsets(5f,10f,5f,5f)
+        layout_piechart.piechart.dragDecelerationFrictionCoef=0.95f
+        layout_piechart.piechart.centerText = "Jumlah Sembuh"
+        layout_piechart.piechart.setCenterTextColor(Color.BLACK)
+        layout_piechart.piechart.setDrawCenterText(true)
 
-        piechart.isDrawHoleEnabled = true
-        piechart.setHoleColor(Color.WHITE)
+        layout_piechart.piechart.isDrawHoleEnabled = true
+        layout_piechart.piechart.setHoleColor(Color.WHITE)
 
-        piechart.setTransparentCircleAlpha(110)
-        piechart.setTransparentCircleColor(Color.WHITE)
+        layout_piechart.piechart.setTransparentCircleAlpha(110)
+        layout_piechart.piechart.setTransparentCircleColor(Color.WHITE)
 
-        piechart.holeRadius =58f
-        piechart.transparentCircleRadius = 61f
+        layout_piechart.piechart.holeRadius =58f
+        layout_piechart.piechart.transparentCircleRadius = 61f
 
-        piechart.rotationAngle = 0f
+        layout_piechart.piechart.rotationAngle = 0f
 
-        piechart.isRotationEnabled = true
-        piechart.isHighlightPerTapEnabled = true
+        layout_piechart.piechart.isRotationEnabled = true
+        layout_piechart.piechart.isHighlightPerTapEnabled = true
 
-        piechart.animateY(1000,Easing.EaseInOutQuad)
-        piechart.legend.isEnabled = false
-        piechart.setEntryLabelColor(Color.WHITE)
-        piechart.setEntryLabelTextSize(0f)
+        layout_piechart.piechart.animateY(1000,Easing.EaseInOutQuad)
+        layout_piechart.piechart.legend.isEnabled = false
+        layout_piechart.piechart.setEntryLabelColor(Color.WHITE)
+        layout_piechart.piechart.setEntryLabelTextSize(0f)
 
-        piechart.highlightValue(null)
+        layout_piechart.piechart.highlightValue(null)
 
+        var totalSembuh = 0
         val sembuh = ArrayList<PieEntry>()
         for (i in 0..5 ){
             sembuh.add(PieEntry(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).key))
+            totalSembuh += listData.get(i).jumlah_sembuh
         }
-
+        tv_totaldata.text = "Total Sembuh : "+totalSembuh
         val sembuhPieDataSet = PieDataSet(sembuh,"")
         sembuhPieDataSet.setDrawIcons(false)
         sembuhPieDataSet.sliceSpace = 6f
@@ -351,9 +480,9 @@ class BarChartActivity : AppCompatActivity() {
         color.add(Color.CYAN)
         sembuhPieDataSet.colors = color
 
-        val legend = piechart.legend
-        piechart.legend.isWordWrapEnabled = true
-        piechart.legend.isEnabled = true
+        val legend = layout_piechart.piechart.legend
+        layout_piechart.piechart.legend.isWordWrapEnabled = true
+        layout_piechart.piechart.legend.isEnabled = false
         legend.verticalAlignment = Legend.LegendVerticalAlignment.CENTER
         legend.horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
         legend.formSize = 20f
@@ -361,47 +490,50 @@ class BarChartActivity : AppCompatActivity() {
         legend.form = Legend.LegendForm.CIRCLE
         legend.textSize = 10f
         legend.orientation = Legend.LegendOrientation.VERTICAL
-        legend.isWordWrapEnabled = true
         legend.setDrawInside(false)
 
+
+
         val data = PieData(sembuhPieDataSet)
-        piechart.data = data
+        layout_piechart.piechart.data = data
 
     }
 
     private fun setupCombinedChart(listData: List<ListData>){
-        combinedChart.description.isEnabled = false
-        combinedChart.setDrawGridBackground(false)
-        combinedChart.setDrawBarShadow(false)
-        combinedChart.isHighlightFullBarEnabled = false
-        combinedChart.setTouchEnabled(true)
-        combinedChart.setPinchZoom(true)
-        combinedChart.isDragXEnabled = true
+        layout_combinechart.combinedChart.description.isEnabled = false
+        layout_combinechart.combinedChart.setDrawGridBackground(false)
+        layout_combinechart.combinedChart.setDrawBarShadow(false)
+        layout_combinechart.combinedChart.isHighlightFullBarEnabled = false
+        layout_combinechart.combinedChart.setTouchEnabled(true)
+        layout_combinechart.combinedChart.setPinchZoom(true)
+        layout_combinechart.combinedChart.isDragXEnabled = true
 
         val label = ArrayList<String>()
         for (i in 0..5){
             label.add(listData.get(i).key)
         }
 
-        val legend = combinedChart.legend
+        val legend = layout_combinechart.combinedChart.legend
+        legend.isEnabled = false
         legend.isWordWrapEnabled = true
         legend.verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
         legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
         legend.orientation = Legend.LegendOrientation.HORIZONTAL
         legend.setDrawInside(false)
 
-        val rightAxis = combinedChart.axisRight
+
+        val rightAxis = layout_combinechart.combinedChart.axisRight
         rightAxis.setDrawGridLines(false)
         rightAxis.axisMinimum = 0f
 
-        val leftAxis = combinedChart.axisLeft
+        val leftAxis = layout_combinechart.combinedChart.axisLeft
         leftAxis.setDrawGridLines(false)
         leftAxis.axisMinimum = 0f
 
-        val axis = combinedChart.xAxis
+        val axis = layout_combinechart.combinedChart.xAxis
         axis.position = XAxis.XAxisPosition.BOTTOM
         axis.axisMinimum = 0f
-        axis.granularity = 1f
+        axis.granularity = 2f
         axis.valueFormatter = IndexAxisValueFormatter(label)
 
         val combinedata = CombinedData()
@@ -409,24 +541,34 @@ class BarChartActivity : AppCompatActivity() {
         combinedata.setData(generateBarData(listData))
         combinedata.setData(generateLineData(listData))
 
-        combinedChart.data = combinedata
+        layout_combinechart.combinedChart.data = combinedata
+
     }
 
     private fun generateLineData(listData: List<ListData>) : LineData{
+        var totalSembuh = 0
+        var totalMeninggal = 0
+        var totalDirawat = 0
         val linedata = LineData()
         val sembuh = ArrayList<Entry>()
         for (i in 0..5 ){
             sembuh.add(Entry(i.toFloat(),listData.get(i).jumlah_sembuh.toFloat()))
+            totalSembuh += listData.get(i).jumlah_sembuh
         }
         val meninggal = ArrayList<Entry>()
         for (i in 0..5 ){
             meninggal.add(Entry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
+            totalMeninggal += listData.get(i).jumlah_meninggal
         }
         val dirawat = ArrayList<Entry>()
         for (i in 0..5 ){
             dirawat.add(Entry(i.toFloat(),listData.get(i).jumlah_dirawat.toFloat()))
+            totalDirawat += listData.get(i).jumlah_dirawat
         }
-
+        var totalKasus = 0
+        totalKasus += totalSembuh + totalDirawat + totalMeninggal
+        tv_combine_totalperprovinsi.visibility=View.GONE
+        tv_combine_totaldata.text = "total sembuh : " + totalSembuh+ ", Total dirawat : " + totalDirawat +", Total Meninggal : "+totalMeninggal+", Total Kasus : "+totalKasus
         val sembuhLineDataset = LineDataSet(sembuh,"Sembuh")
         sembuhLineDataset.mode = LineDataSet.Mode.CUBIC_BEZIER
         sembuhLineDataset.color = Color.GREEN
@@ -435,7 +577,7 @@ class BarChartActivity : AppCompatActivity() {
 
         val dirawatLineDataSet = LineDataSet(dirawat,"dirawat")
         dirawatLineDataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
-        dirawatLineDataSet.color = Color.GRAY
+        dirawatLineDataSet.color = Color.BLUE
         dirawatLineDataSet.circleRadius = 5f
         dirawatLineDataSet.setCircleColor(Color.GRAY)
 
@@ -448,6 +590,49 @@ class BarChartActivity : AppCompatActivity() {
         linedata.addDataSet(meninggalLineDataset)
         linedata.addDataSet(dirawatLineDataSet)
         linedata.addDataSet(sembuhLineDataset)
+        //legend filter
+        var sembuhState = 0
+        lin_combine_sembuh.setOnClickListener {
+            if (sembuhState==0){
+                sembuhLineDataset.isVisible = false
+                combinedChart.invalidate()
+                sembuhTv_combine.paintFlags = sembuhTv_combine.paintFlags  or (Paint.STRIKE_THRU_TEXT_FLAG)
+                sembuhState = 1
+            }else{
+                sembuhLineDataset.isVisible = true
+                combinedChart.invalidate()
+                sembuhTv_combine.paintFlags = sembuhTv_combine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                sembuhState = 0
+            }
+            var stateDirawat = 0
+            lin_combine_dirawat.setOnClickListener {
+                if (stateDirawat==0){
+                    dirawatLineDataSet.isVisible = false
+                    combinedChart.invalidate()
+                    dirawatTv_combine.paintFlags = dirawatTv_combine.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+                    stateDirawat = 1
+                }else{
+                    dirawatLineDataSet.isVisible = true
+                    combinedChart.invalidate()
+                    dirawatTv_combine.paintFlags = dirawatTv_combine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                    stateDirawat = 0
+                }
+            }
+            var stateMeninggal = 0
+            lin_combine_meninggal.setOnClickListener {
+                if (stateMeninggal==0){
+                    meninggalLineDataset.isVisible = false
+                    combinedChart.invalidate()
+                    meninggalTv_combine.paintFlags = meninggalTv_combine.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+                    stateMeninggal = 1
+                }else{
+                    meninggalLineDataset.isVisible = true
+                    combinedChart.invalidate()
+                    meninggalTv_combine.paintFlags = meninggalTv_combine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                    stateMeninggal = 0
+                }
+            }
+        }
         return linedata
     }
 
@@ -462,9 +647,24 @@ class BarChartActivity : AppCompatActivity() {
             meninggal.add(BarEntry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
         }
         val barDataset = BarDataSet(barEntriesList, "Jumlah Kasus")
-        barDataset.color = Color.BLUE
+        barDataset.color = Color.GRAY
         val meninggalDataSet = BarDataSet(meninggal,"")
         meninggalDataSet.color = Color.RED
+
+        var stateKasus = 0
+        lin_combine_totalkasus.setOnClickListener {
+            if (stateKasus==0){
+                barDataset.isVisible = false
+                combinedChart.invalidate()
+                kasustv_combine.paintFlags = kasustv_combine.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+                stateKasus = 1
+            }else {
+                barDataset.isVisible = true
+                combinedChart.invalidate()
+                kasustv_combine.paintFlags = kasustv_combine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                stateKasus = 0
+            }
+        }
 
         return BarData(barDataset)
     }
