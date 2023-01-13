@@ -43,32 +43,25 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="DKI"
-                    android:layout_marginStart="16dp"/>
+                    android:textColor="@color/black"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"/>
             </LinearLayout>
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/stackbarchart"
                 android:layout_below="@id/lin_stack_totaldata"
                 android:layout_above="@id/rel_custom_legend"
-                android:layout_toEndOf="@id/vertical_tv"
                 android:visibility="visible"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
-            <com.systudio.datacovid19.utils.VerticalTextView
-                android:id="@+id/vertical_tv"
-                android:layout_width="30dp"
                 android:layout_height="match_parent"
-                android:layout_above="@id/rel_custom_legend"
-                android:layout_below="@id/lin_stack_totaldata"
-                android:layout_gravity="center_vertical"
-                android:gravity="center"
-                android:text="Kasus"
-                android:layout_marginTop="50dp"/>
+                />
+
             <RelativeLayout
                 android:id="@+id/rel_custom_legend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true">
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true">
                 <LinearLayout
                     android:id="@+id/lin_sembuh_stack"
                     android:layout_width="wrap_content"

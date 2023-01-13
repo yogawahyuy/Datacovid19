@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.fragment.StackBarFragment">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/stack_fragment_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        android:elevation="4dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Stackbar Chart"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:layout_marginStart="16dp"
+            android:textStyle="bold"/>
+    </androidx.appcompat.widget.Toolbar>
     <androidx.cardview.widget.CardView
+        android:layout_below="@id/stack_fragment_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="13dp"
@@ -20,46 +39,49 @@
         android:layout_marginRight="12dp"
         >
         <RelativeLayout
-            android:id="@+id/rel_lay_combineChart"
+            android:id="@+id/rel_lay_stackChart"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
             <LinearLayout
-                android:id="@+id/lin_combine_totaldata"
+                android:id="@+id/lin_stack_totaldata"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <TextView
-                    android:id="@+id/tv_combine_totaldata"
+                    android:id="@+id/tv_stack_totaldata"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Sembuh : 101010"
                     android:textColor="@color/black"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"/>
                 <TextView
-                    android:id="@+id/tv_combine_totalperprovinsi"
+                    android:id="@+id/tv_stack_totalperprovinsi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="DKI"
+                    android:textColor="@color/black"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"/>
             </LinearLayout>
-            <com.github.mikephil.charting.charts.CombinedChart
-                android:id="@+id/combinedChart"
-                android:layout_below="@id/lin_combine_totaldata"
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/stackbarchart"
+                android:layout_below="@id/lin_stack_totaldata"
                 android:layout_above="@id/rel_custom_legend"
                 android:visibility="visible"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                />
+
             <RelativeLayout
                 android:id="@+id/rel_custom_legend"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true">
                 <LinearLayout
-                    android:id="@+id/lin_combine_sembuh"
+                    android:id="@+id/lin_sembuh_stack"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -69,17 +91,18 @@
                         android:layout_height="20dp"
                         android:src="@drawable/sembuh"/>
                     <TextView
-                        android:id="@+id/sembuhTv_combine"
+                        android:id="@+id/sembuhTv_stack"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Sembuh"
+                        android:layout_marginStart="8dp"
                         android:textColor="@color/black"/>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_marginStart="8dp"
-                    android:id="@+id/lin_combine_dirawat"
-                    android:layout_toRightOf="@id/lin_combine_sembuh"
+                    android:id="@+id/lin_dirawat_stack"
+                    android:layout_toRightOf="@id/lin_sembuh_stack"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -88,16 +111,17 @@
                         android:layout_height="20dp"
                         android:src="@drawable/dirawat"/>
                     <TextView
-                        android:id="@+id/dirawatTv_combine"
+                        android:id="@+id/dirawatTv_stack"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Dirawat"
+                        android:layout_marginStart="8dp"
                         android:textColor="@color/black"/>
                 </LinearLayout>
                 <LinearLayout
-                    android:id="@+id/lin_combine_meninggal"
-                    android:layout_toRightOf="@id/lin_combine_dirawat"
+                    android:id="@+id/lin_meninggal_stack"
+                    android:layout_toRightOf="@id/lin_dirawat_stack"
                     android:layout_marginStart="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -107,32 +131,14 @@
                         android:layout_height="20dp"
                         android:src="@drawable/meninggal"/>
                     <TextView
-                        android:id="@+id/meninggalTv_combine"
+                        android:id="@+id/meninggalTvstack"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Meninggal"
+                        android:layout_marginStart="8dp"
                         android:textColor="@color/black"/>
                 </LinearLayout>
-                <LinearLayout
-                android:id="@+id/lin_combine_totalkasus"
-                android:layout_toRightOf="@id/lin_combine_meninggal"
-                android:layout_marginStart="8dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/total"/>
-                <TextView
-                    android:id="@+id/kasustv_combine"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Kasus"
-                    android:textColor="@color/black"/>
-            </LinearLayout>
             </RelativeLayout>
         </RelativeLayout>
     </androidx.cardview.widget.CardView>

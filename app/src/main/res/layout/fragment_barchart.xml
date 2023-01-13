@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".view.fragment.BarchartFragment">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/barchart_fragment_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        android:elevation="4dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/bar_chart"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:layout_marginStart="16dp"
+            android:textStyle="bold"/>
+    </androidx.appcompat.widget.Toolbar>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardview_barchart"
+        android:layout_below="@id/barchart_fragment_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="13dp"
+        android:elevation="8dp"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0.0px"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        app:cardElevation="10dp"
+        app:cardPreventCornerOverlap="false"
+        android:layout_marginBottom="13dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/rel_chart"
+                android:layout_width="376dp"
+                android:layout_height="695dp"
+                android:layout_marginBottom="-9dp">
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/barchartFra"
+                    android:layout_width="match_parent"
+                    android:layout_height="500dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp" />
+
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/groupbarchart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone" />
+
+                <com.github.mikephil.charting.charts.CandleStickChart
+                    android:id="@+id/candleStickChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>
