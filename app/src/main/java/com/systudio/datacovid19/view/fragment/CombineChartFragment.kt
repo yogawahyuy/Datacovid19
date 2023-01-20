@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -47,54 +49,57 @@ class CombineChartFragment : Fragment() {
         viewModel.fetchLiveData().observe(requireActivity()) {
             if (it != null) {
                 setupCombinedChart(it)
+            }else{
+                binding.combineFragmentToolbar.visibility = View.GONE
+                binding.nointernet.relNointernet.visibility = View.VISIBLE
             }
         }
         viewModel.fetchAllData()
     }
     private fun setupCombinedChart(listData: List<ListData>){
-        binding.combinedChart.description.isEnabled = false
-        binding.combinedChart.setDrawGridBackground(false)
-        binding.combinedChart.setDrawBarShadow(false)
-        binding.combinedChart.isHighlightFullBarEnabled = false
-        binding.combinedChart.setTouchEnabled(true)
-        binding.combinedChart.setPinchZoom(true)
-        binding.combinedChart.isDragXEnabled = true
+        val combinedata = CombinedData()
+        combinedata.setData(generateLineData(listData))
+        combinedata.setData(generateBarData(listData))
 
+        val combineChart = binding.combinedChart
+        combineChart.apply {
+            description.isEnabled = false
+            setDrawGridBackground(false)
+            setDrawBarShadow(false)
+            isHighlightFullBarEnabled = false
+            setTouchEnabled(true)
+            setPinchZoom(true)
+            isDragXEnabled = true
+            legend.isEnabled = false
+            data = combinedata
+
+        }
+
+        val rightAxis = binding.combinedChart.axisRight
+        rightAxis.apply {
+            setDrawGridLines(false)
+            isEnabled = false
+        }
+
+        val leftAxis = binding.combinedChart.axisLeft
+        leftAxis.apply {
+            setDrawGridLines(false)
+            axisMinimum = 0f
+        }
         val label = ArrayList<String>()
         for (i in 0..5){
             label.add(listData.get(i).key)
         }
-
-        val legend = binding.combinedChart.legend
-        legend.isEnabled = false
-        legend.isWordWrapEnabled = true
-        legend.verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
-        legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
-        legend.orientation = Legend.LegendOrientation.HORIZONTAL
-        legend.setDrawInside(false)
-
-        val rightAxis = binding.combinedChart.axisRight
-        rightAxis.setDrawGridLines(false)
-        rightAxis.axisMinimum = 0f
-        rightAxis.isEnabled = false
-
-        val leftAxis = binding.combinedChart.axisLeft
-        leftAxis.setDrawGridLines(false)
-        leftAxis.axisMinimum = 1f
-
         val axis = binding.combinedChart.xAxis
-        axis.position = XAxis.XAxisPosition.BOTTOM
-        axis.axisMinimum = 0f
-        axis.granularity = 2f
-        axis.setDrawGridLines(false)
-        axis.valueFormatter = IndexAxisValueFormatter(label)
-
-        val combinedata = CombinedData()
-
-        combinedata.setData(generateBarData(listData))
-        combinedata.setData(generateLineData(listData))
-
-        binding.combinedChart.data = combinedata
+        axis.apply {
+            position = XAxis.XAxisPosition.BOTTOM
+            granularity = 2f
+            setDrawGridLines(false)
+            axis.valueFormatter = IndexAxisValueFormatter(label)
+            //axisMinimum = -combinedata.barData.barWidth - 0.5f
+            axisMinimum = combinedata.xMin - 0.5f
+            axisMaximum = combinedata.xMax + 0.5f
+        }
 
     }
 
@@ -104,44 +109,47 @@ class CombineChartFragment : Fragment() {
         var totalDirawat = 0
         val linedata = LineData()
         val sembuh = ArrayList<Entry>()
-        for (i in 0..5 ){
-            sembuh.add(Entry(i.toFloat(),listData.get(i).jumlah_sembuh.toFloat()))
-            totalSembuh += listData.get(i).jumlah_sembuh
-        }
         val meninggal = ArrayList<Entry>()
-        for (i in 0..5 ){
-            meninggal.add(Entry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
-            totalMeninggal += listData.get(i).jumlah_meninggal
-        }
         val dirawat = ArrayList<Entry>()
         for (i in 0..5 ){
+            sembuh.add(Entry(i.toFloat(),listData.get(i).jumlah_sembuh.toFloat()))
+            meninggal.add(Entry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
             dirawat.add(Entry(i.toFloat(),listData.get(i).jumlah_dirawat.toFloat()))
+            totalSembuh += listData.get(i).jumlah_sembuh
+            totalMeninggal += listData.get(i).jumlah_meninggal
             totalDirawat += listData.get(i).jumlah_dirawat
         }
+
         var totalKasus = 0
         totalKasus += totalSembuh + totalDirawat + totalMeninggal
         binding.tvCombineTotalperprovinsi.visibility=View.GONE
         val isiTv = ""+listData.get(0).jumlah_kasis + ", "+ listData.get(1).jumlah_kasis+" "+ listData.get(2).jumlah_kasis +
                 ", "+ listData.get(3).jumlah_kasis + ", "+ listData.get(4).jumlah_kasis +", "+listData.get(5).jumlah_kasis
-        binding.tvCombineTotaldata.text = isiTv
+       // binding.tvCombineTotaldata.text = isiTv
         //tv_combine_totaldata.text = "total sembuh : " + totalSembuh+ ", Total dirawat : " + totalDirawat +", Total Meninggal : "+totalMeninggal+", Total Kasus : "+totalKasus
         val sembuhLineDataset = LineDataSet(sembuh,"Sembuh")
-        sembuhLineDataset.mode = LineDataSet.Mode.CUBIC_BEZIER
-        sembuhLineDataset.color = Color.GREEN
-        sembuhLineDataset.circleRadius = 5f
-        sembuhLineDataset.setCircleColor(Color.GREEN)
+        sembuhLineDataset.apply {
+            mode = LineDataSet.Mode.CUBIC_BEZIER
+            color = Color.GREEN
+            circleRadius = 5f
+            setCircleColor(Color.GREEN)
+        }
 
         val dirawatLineDataSet = LineDataSet(dirawat,"dirawat")
-        dirawatLineDataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
-        dirawatLineDataSet.color = Color.BLUE
-        dirawatLineDataSet.circleRadius = 5f
-        dirawatLineDataSet.setCircleColor(Color.GRAY)
+        dirawatLineDataSet.apply {
+            mode = LineDataSet.Mode.CUBIC_BEZIER
+            color = Color.BLUE
+            circleRadius = 5f
+            setCircleColor(Color.GRAY)
+        }
 
         val meninggalLineDataset = LineDataSet(meninggal,"Meninggal")
-        meninggalLineDataset.mode = LineDataSet.Mode.CUBIC_BEZIER
-        meninggalLineDataset.color = Color.RED
-        meninggalLineDataset.circleRadius = 5f
-        meninggalLineDataset.setCircleColor(Color.RED)
+        meninggalLineDataset.apply {
+            mode = LineDataSet.Mode.CUBIC_BEZIER
+            color = Color.RED
+            circleRadius = 5f
+            setCircleColor(Color.RED)
+        }
 
         linedata.addDataSet(meninggalLineDataset)
         linedata.addDataSet(dirawatLineDataSet)
@@ -160,6 +168,7 @@ class CombineChartFragment : Fragment() {
                 binding.sembuhTvCombine.paintFlags = binding.sembuhTvCombine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
                 sembuhState = 0
             }
+
             var stateDirawat = 0
             binding.linCombineDirawat.setOnClickListener {
                 if (stateDirawat==0){
@@ -176,37 +185,73 @@ class CombineChartFragment : Fragment() {
             }
             var stateMeninggal = 0
             binding.linCombineMeninggal.setOnClickListener {
-                if (stateMeninggal==0){
+                if (stateMeninggal == 0) {
                     meninggalLineDataset.isVisible = false
                     binding.combinedChart.invalidate()
-                    binding.meninggalTvCombine.paintFlags = binding.meninggalTvCombine.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+                    binding.meninggalTvCombine.paintFlags =
+                        binding.meninggalTvCombine.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
                     stateMeninggal = 1
-                }else{
+                } else {
                     meninggalLineDataset.isVisible = true
                     binding.combinedChart.invalidate()
-                    binding.meninggalTvCombine.paintFlags = binding.meninggalTvCombine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                    binding.meninggalTvCombine.paintFlags =
+                        binding.meninggalTvCombine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
                     stateMeninggal = 0
                 }
             }
         }
+        var stateDirawat = 0
+        binding.linCombineDirawat.setOnClickListener {
+            if (stateDirawat==0){
+                dirawatLineDataSet.isVisible = false
+                binding.combinedChart.invalidate()
+                binding.dirawatTvCombine.paintFlags = binding.dirawatTvCombine.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+                stateDirawat = 1
+            }else{
+                dirawatLineDataSet.isVisible = true
+                binding.combinedChart.invalidate()
+                binding.dirawatTvCombine.paintFlags = binding.dirawatTvCombine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                stateDirawat = 0
+            }
+        }
+        var stateMeninggal = 0
+        binding.linCombineMeninggal.setOnClickListener {
+            if (stateMeninggal==0){
+                meninggalLineDataset.isVisible = false
+                binding.combinedChart.invalidate()
+                binding.meninggalTvCombine.paintFlags = binding.meninggalTvCombine.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+                stateMeninggal = 1
+            }else{
+                meninggalLineDataset.isVisible = true
+                binding.combinedChart.invalidate()
+                binding.meninggalTvCombine.paintFlags = binding.meninggalTvCombine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                stateMeninggal = 0
+            }
+            }
+
         return linedata
     }
 
     private fun generateBarData(listData: List<ListData>): BarData {
+        val myTextView = arrayListOf<TextView>()
+        val param = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        param.setMargins(5,4,4,4)
         val barEntriesList = ArrayList<BarEntry>()
 
         for (i in 0..5) {
             barEntriesList.add(BarEntry(i.toFloat(), listData.get(i).jumlah_kasis.toFloat()))
-        }
-        val meninggal = ArrayList<BarEntry>()
-        for (i in 0..5 ){
-            meninggal.add(BarEntry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
+            myTextView.add(TextView(requireContext()))
+            myTextView[i].text = listData.get(i).jumlah_kasis.toString()
+            myTextView[i].textSize = 8f
+            myTextView.get(i).layoutParams = param
+            binding.linCombineTotaldata.addView(myTextView[i])
         }
         val barDataset = BarDataSet(barEntriesList, "Jumlah Kasus")
         barDataset.color = Color.GRAY
-        val meninggalDataSet = BarDataSet(meninggal,"")
-        meninggalDataSet.color = Color.RED
-
+        barDataset.setDrawValues(false)
         var stateKasus = 0
         binding.linCombineTotalkasus.setOnClickListener {
             if (stateKasus==0){

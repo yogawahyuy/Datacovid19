@@ -46,7 +46,6 @@
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lineChart"
                 android:layout_above="@id/rel_custom_legend"
-                android:layout_below="@id/lin_line_totaldata"
                 android:visibility="visible"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
@@ -117,5 +116,6 @@
             </RelativeLayout>
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
+    <include android:id="@+id/nointernet" layout="@layout/layout_no_internet_conn" android:visibility="gone"/>
 
 </RelativeLayout>

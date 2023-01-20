@@ -41,12 +41,13 @@
             android:id="@+id/rel_lay_combineChart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+           >
             <LinearLayout
                 android:id="@+id/lin_combine_totaldata"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:layout_marginStart="56dp">
                 <TextView
                     android:id="@+id/tv_combine_totaldata"
                     android:layout_width="match_parent"
@@ -54,22 +55,24 @@
                     android:text="Sembuh : 101010"
                     android:textColor="@color/black"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="16dp"/>
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone"/>
                 <TextView
                     android:id="@+id/tv_combine_totalperprovinsi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="DKI"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"/>
             </LinearLayout>
             <com.github.mikephil.charting.charts.CombinedChart
                 android:id="@+id/combinedChart"
-                android:layout_below="@id/lin_combine_totaldata"
                 android:layout_above="@id/rel_custom_legend"
                 android:visibility="visible"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"/>
             <RelativeLayout
                 android:id="@+id/rel_custom_legend"
                 android:layout_alignParentBottom="true"
@@ -154,5 +157,5 @@
             </RelativeLayout>
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
-
+    <include android:id="@+id/nointernet" layout="@layout/layout_no_internet_conn" android:visibility="gone"/>
 </RelativeLayout>

@@ -45,31 +45,28 @@
 
             <RelativeLayout
                 android:id="@+id/rel_chart"
-                android:layout_width="376dp"
-                android:layout_height="695dp"
-                android:layout_marginBottom="-9dp">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+               >
+                <LinearLayout
+                    android:id="@+id/lin_top_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginStart="52dp">
 
+                </LinearLayout>
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/barchartFra"
                     android:layout_width="match_parent"
-                    android:layout_height="500dp"
+                    android:layout_height="match_parent"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="16dp" />
+                    android:layout_marginTop="8dp"/>
 
-
-                <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/groupbarchart"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone" />
-
-                <com.github.mikephil.charting.charts.CandleStickChart
-                    android:id="@+id/candleStickChart"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone" />
             </RelativeLayout>
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
+
+    <include android:id="@+id/nointernet" layout="@layout/layout_no_internet_conn" android:visibility="gone"/>
 
 </RelativeLayout>

@@ -49,4 +49,6 @@
                 android:layout_height="match_parent"/>
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
+    <include android:id="@+id/nointernet" layout="@layout/layout_no_internet_conn" android:visibility="gone"/>
+
 </RelativeLayout>

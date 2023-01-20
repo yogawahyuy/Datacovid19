@@ -47,10 +47,71 @@ class PieChartFragment : Fragment() {
         val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         viewModel.fetchLiveData().observe(requireActivity()) {
             if (it != null) {
-                setupPieChart(it)
+                //setupPieChart(it)
+                dataProces(it)
             }
         }
         viewModel.fetchAllData()
+    }
+
+    private fun setupPieCharts(entries: List<PieEntry>,color: ArrayList<Int>){
+        val dataSet = PieDataSet(entries,"")
+        dataSet.apply {
+            setDrawIcons(false)
+            sliceSpace = 6f
+            iconsOffset = MPPointF(10f,70f)
+            selectionShift = 5f
+            colors = color
+        }
+        val pieChart = binding.piechart
+        pieChart.apply {
+            description.isEnabled = false
+            setExtraOffsets(5f,10f,5f,5f)
+            dragDecelerationFrictionCoef = 0.95f
+            centerText = "Jumlah Sembuh"
+            setCenterTextColor(Color.BLACK)
+            setDrawCenterText(true)
+            holeRadius = 58f
+            transparentCircleRadius = 61f
+            rotationAngle = 0f
+            isRotationEnabled = true
+            isHighlightPerTapEnabled = true
+            animateY(1000,Easing.EaseInOutQuad)
+            setEntryLabelColor(Color.WHITE)
+            setEntryLabelTextSize(0f)
+            data = PieData(dataSet)
+            highlightValue(null)
+            setTransparentCircleAlpha(110)
+            setTransparentCircleColor(Color.WHITE)
+        }
+        val legend = binding.piechart.legend
+        legend.apply {
+            isEnabled = true
+            isWordWrapEnabled = true
+            verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
+            horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+            form = Legend.LegendForm.CIRCLE
+            formSize = 20f
+            formToTextSpace = 0f
+            setDrawInside(false)
+            orientation = Legend.LegendOrientation.HORIZONTAL
+        }
+    }
+
+    private fun dataProces(listData: List<ListData>){
+        val sembuh = ArrayList<PieEntry>()
+        for (i in 0..5 ){
+            sembuh.add(PieEntry(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).key))
+        }
+        val color = ArrayList<Int>()
+        color.add(Color.RED)
+        color.add(Color.BLUE)
+        color.add(Color.YELLOW)
+        color.add(Color.GREEN)
+        color.add(Color.GRAY)
+        color.add(Color.CYAN)
+
+        setupPieCharts(sembuh,color)
     }
 
     private fun setupPieChart(listData: List<ListData>){
@@ -76,7 +137,6 @@ class PieChartFragment : Fragment() {
         binding.piechart.isHighlightPerTapEnabled = true
 
         binding.piechart.animateY(1000, Easing.EaseInOutQuad)
-        binding.piechart.legend.isEnabled = false
         binding.piechart.setEntryLabelColor(Color.WHITE)
         binding.piechart.setEntryLabelTextSize(0f)
 

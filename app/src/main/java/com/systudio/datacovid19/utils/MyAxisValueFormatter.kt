@@ -12,13 +12,17 @@ import java.text.DecimalFormat
 class MyAxisValueFormatter : ValueFormatter() {
     var format : DecimalFormat = DecimalFormat()
 
-    fun MyAxisValueFormatter(){
-        format = DecimalFormat("###,###,###,##0.0")
+
+    init {
+        format = DecimalFormat("###,###,##0.0")
     }
 
-    override fun getFormattedValue(value: Float, axis: AxisBase?): String {
-        return format.format(value)+" $ "
+    override fun getFormattedValue(
+        value: Float,
+        entry: Entry?,
+        dataSetIndex: Int,
+        viewPortHandler: ViewPortHandler?
+    ): String {
+        return entry?.data.toString()
     }
-
-
 }

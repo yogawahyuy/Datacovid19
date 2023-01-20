@@ -8,6 +8,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.view.setMargins
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -57,10 +60,70 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
         viewModel.fetchLiveData().observe(requireActivity()) {
             if (it != null) {
                 //setupStackedBarChart(it)
-                setupNewStackedBarChart(it)
+                //setupNewStackedBarChart(it)
+                dataProces(it)
             }
         }
         viewModel.fetchAllData()
+    }
+
+    private fun setupStackBarChart(entries: List<BarEntry>, label: List<String>){
+        val dataset = BarDataSet(entries,"")
+        dataset.colors = getColor()
+        dataset.setDrawValues(false)
+        val stackChart = binding.stackbarchart
+        stackChart.apply {
+            setPinchZoom(false)
+            setDrawGridBackground(false)
+            setDrawBarShadow(false)
+            isHighlightFullBarEnabled = false
+            animateXY(200,500)
+            legend.isEnabled = false
+            description.isEnabled = false
+            data = BarData(dataset)
+        }
+        val xAxis = binding.stackbarchart.xAxis
+        xAxis.apply {
+            setDrawGridLines(false)
+            position = XAxis.XAxisPosition.BOTTOM
+            granularity = 2f
+            valueFormatter = IndexAxisValueFormatter(label)
+
+        }
+        val leftAxis = binding.stackbarchart.axisLeft
+        leftAxis.apply {
+            setDrawGridLines(false)
+            axisMinimum = 0f
+        }
+        val rightAxis = binding.stackbarchart.axisRight
+        rightAxis.apply {
+            isEnabled = false
+        }
+    }
+    private fun dataProces(listData: List<ListData>){
+        val myTextView = arrayListOf<TextView>()
+        val param = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        param.setMargins(5,4,4,4)
+        val barEntriesList = ArrayList<BarEntry>()
+        val label = ArrayList<String>()
+        for (i in 0..5){
+            val floatArray = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_dirawat.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
+            barEntriesList.add(BarEntry(i.toFloat(),floatArray))
+            label.add(listData.get(i).key)
+            myTextView.add(TextView(requireContext()))
+        }
+        for (i in myTextView.indices) {
+            myTextView[i].text = listData.get(i).jumlah_kasis.toString()
+            myTextView[i].textSize = 8f
+            myTextView.get(i).layoutParams = param
+            binding.linStackTotaldata.addView(myTextView[i])
+            Log.d("stackbar dataproses", "dataProces: i"+i)
+        }
+        Log.d("stackbar dataproses", "dataProces: "+myTextView.size)
+        setupStackBarChart(barEntriesList,label)
     }
 
     private fun setupStackedBarChart(listData: List<ListData>){
@@ -73,20 +136,27 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
         var totalKasus = 0
         val dataStackBar = ArrayList<BarEntry>()
         val sembuh = ArrayList<BarEntry>()
-        for (i in 0..5 ){
-            sembuh.add(BarEntry(i.toFloat(),listData.get(i).jumlah_sembuh.toFloat()))
-            val floatArray = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_dirawat.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
-            //dataStackBar.add(BarEntry(i.toFloat(),floatArray))
-            totalSembuh += listData.get(i).jumlah_sembuh
-        }
         val meninggal = ArrayList<BarEntry>()
-        for (i in 0..5 ){
-            meninggal.add(BarEntry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
-            totalMeninggal += listData.get(i).jumlah_meninggal
-        }
         val dirawat = ArrayList<BarEntry>()
         for (i in 0..5 ){
+            sembuh.add(BarEntry(i.toFloat(),listData.get(i).jumlah_sembuh.toFloat()))
+            meninggal.add(BarEntry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
             dirawat.add(BarEntry(i.toFloat(),listData.get(i).jumlah_dirawat.toFloat()))
+            val floatArray = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_dirawat.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
+            //dataStackBar.add(BarEntry(i.toFloat(),floatArray))
+            //dataStackBar.add(BarEntry(i.toFloat(),listData.get(i).jumlah_sembuh.toFloat()))
+            //dataStackBar.add(BarEntry(i.toFloat(),listData.get(i).jumlah_dirawat.toFloat()))
+            //dataStackBar.add(BarEntry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
+            totalSembuh += listData.get(i).jumlah_sembuh
+        }
+
+        for (i in 0..5 ){
+            //meninggal.add(BarEntry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
+            totalMeninggal += listData.get(i).jumlah_meninggal
+        }
+
+        for (i in 0..5 ){
+            //dirawat.add(BarEntry(i.toFloat(),listData.get(i).jumlah_dirawat.toFloat()))
             totalDirawat += listData.get(i).jumlah_dirawat
         }
         //add total on top chart
@@ -95,21 +165,21 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
         val isiTv = ""+listData.get(0).jumlah_kasis + ", "+ listData.get(1).jumlah_kasis+" "+ listData.get(2).jumlah_kasis +
                 ", "+ listData.get(3).jumlah_kasis + ", "+ listData.get(4).jumlah_kasis +", "+listData.get(5).jumlah_kasis
         binding.tvStackTotalperprovinsi.text = isiTv
-        val sembuhBarDataSet = BarDataSet(sembuh,"Sembuh")
+        val sembuhBarDataSet = BarDataSet(sembuh,"")
         sembuhBarDataSet.color = Color.GREEN
-        val meninggalBarDataSet = BarDataSet(meninggal,"Meninggal")
+        val meninggalBarDataSet = BarDataSet(meninggal,"")
         meninggalBarDataSet.color = Color.RED
-        val dirawatBarDataSet = BarDataSet(dirawat,"dirawat")
+        val dirawatBarDataSet = BarDataSet(dirawat,"")
         dirawatBarDataSet.color = Color.BLUE
         dirawatBarDataSet.setDrawValues(false)
 
-        //val dataStackDataSet = BarDataSet(dataStackBar,"")
-        //val colors = arrayOf(Color.GREEN,Color.BLUE,Color.RED)
-        //dataStackDataSet.colors = colors.toMutableList()
+//        val dataStackDataSet = BarDataSet(dataStackBar,"")
+//        val colors = arrayOf(Color.GREEN,Color.BLUE,Color.RED)
+//        dataStackDataSet.colors = colors.toMutableList()
         val dataset = ArrayList<IBarDataSet>()
         dataset.add(sembuhBarDataSet)
         dataset.add(dirawatBarDataSet)
-        //dataset.add(meninggalBarDataSet)
+        dataset.add(meninggalBarDataSet)
 
         binding.stackbarchart.description.isEnabled = false
         binding.stackbarchart.xAxis.setDrawGridLines(false)
@@ -121,12 +191,11 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
         binding.stackbarchart.isDragEnabled = true
         binding.stackbarchart.setScaleEnabled(true)
         binding.stackbarchart.data = BarData(dataset)
+        //binding.stackbarchart.data = BarData(dataStackDataSet)
         binding.stackbarchart.animateXY(200,500)
-//        binding.stackbarchart.axisLeft.axisMaximum = binding.stackbarchart.data.yMax + 0.25f
-//        binding.stackbarchart.axisLeft.axisMinimum = binding.stackbarchart.data.yMin - 0.25f
         binding.stackbarchart.setDrawValueAboveBar(true)
         binding.stackbarchart.setFitBars(true)
-        binding.stackbarchart.data.getGroupWidth(0f,2f)
+        binding.stackbarchart.data.getGroupWidth(3f,2f)
         binding.stackbarchart.axisLeft.spaceMin = 1f
 
         val label = ArrayList<String>()
@@ -144,6 +213,7 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
         binding.linSembuhStack.setOnClickListener {
             if (state==0) {
                 sembuhBarDataSet.isVisible = false
+                Log.d("stackbarfragment", "setupNewStackedBarChart: "+binding.stackbarchart.data.dataSets.size)
                 binding.stackbarchart.invalidate()
                 binding.sembuhTvStack.paintFlags = binding.sembuhTvStack.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
                 state = 1
@@ -198,6 +268,7 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
         binding.stackbarchart.xAxis.position = XAxis.XAxisPosition.BOTTOM
         binding.stackbarchart.axisRight.isEnabled = false
         binding.stackbarchart.axisLeft.axisMinimum = 0f
+        binding.stackbarchart.animateXY(200,500)
 
         val leftAxis = binding.stackbarchart.axisLeft
         leftAxis.valueFormatter = MyAxisValueFormatter()
@@ -252,7 +323,8 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
             binding.stackbarchart.data = data1
             val marker = StackBarChartMarker(requireContext(),R.layout.custom_marker_view,label)
             binding.stackbarchart.marker = marker
-            Log.d("stackbarfragment", "setupNewStackedBarChart: "+bardata.values)
+            Log.d("stackbarfragment", "setupNewStackedBarChart: "+bardata.values.get(0).yVals.get(0).toString())
+            Log.d("stackbarfragment", "setupNewStackedBarChart: "+binding.stackbarchart.data.dataSets.get(0))
         }
 
         binding.stackbarchart.setFitBars(true)
@@ -262,7 +334,7 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
         binding.linSembuhStack.setOnClickListener {
             if (state==0) {
                 //sembuhBarDataSet.isVisible = false
-                Log.d("stackbarfrag onclik", "setupNewStackedBarChart: " +binding.stackbarchart.barData.dataSets[0])
+                Log.d("stackbarfrag onclik", "setupNewStackedBarChart: " +binding.stackbarchart.barData.dataSets.get(0).getIndexInEntries(1).toString())
                 binding.stackbarchart.data.dataSets.get(0).isVisible = false
                 binding.stackbarchart.invalidate()
                 binding.sembuhTvStack.paintFlags = binding.sembuhTvStack.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
@@ -307,7 +379,6 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
 
     private fun getColor() : MutableList<Int>{
         val mutableListInt : MutableList<Int> = mutableListOf()
-        //System.arraycopy(ColorTemplate.MATERIAL_COLORS,0,mutableListInt,0,3)
         mutableListInt.add(Color.GREEN)
         mutableListInt.add(Color.BLUE)
         mutableListInt.add(Color.RED)
