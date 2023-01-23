@@ -2,6 +2,7 @@ package com.systudio.datacovid19.view.fragment
 
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -238,7 +239,7 @@ class CombineChartFragment : Fragment() {
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
-        param.setMargins(5,4,4,4)
+        param.setMargins(25,10,10,10)
         val barEntriesList = ArrayList<BarEntry>()
 
         for (i in 0..5) {
@@ -246,6 +247,8 @@ class CombineChartFragment : Fragment() {
             myTextView.add(TextView(requireContext()))
             myTextView[i].text = listData.get(i).jumlah_kasis.toString()
             myTextView[i].textSize = 8f
+            myTextView[i].typeface = Typeface.DEFAULT
+            myTextView[i].setTextColor(Color.BLACK)
             myTextView.get(i).layoutParams = param
             binding.linCombineTotaldata.addView(myTextView[i])
         }

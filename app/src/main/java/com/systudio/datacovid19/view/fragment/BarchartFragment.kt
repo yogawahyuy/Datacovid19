@@ -1,6 +1,8 @@
 package com.systudio.datacovid19.view.fragment
 
+import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -38,6 +40,8 @@ class BarchartFragment : Fragment() {
 
     private var _binding : FragmentBarchartBinding? = null
     private val binding get() = _binding!!
+    lateinit var myTextView: ArrayList<TextView>
+    //private lateinit var ld: List<ListData>
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,11 +52,13 @@ class BarchartFragment : Fragment() {
         return binding.root
     }
 
+
     private fun initVm(){
         val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         viewModel.fetchLiveData().observe(requireActivity()) {
             if (it != null) {
                 //setupBarchart(it)
+                //ld = it
                 dataProses(it)
             }else{
                 binding.cardviewBarchart.visibility = View.GONE
@@ -88,7 +94,7 @@ class BarchartFragment : Fragment() {
     }
 
     private fun dataProses(listData: List<ListData>){
-        val myTextView = arrayListOf<TextView>()
+        myTextView = ArrayList()
         val barEntriesList = ArrayList<BarEntry>()
         val label = ArrayList<String>()
         val param = LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT)
@@ -99,9 +105,9 @@ class BarchartFragment : Fragment() {
             myTextView.add(TextView(requireContext()))
             myTextView[i].text = listData.get(i).jumlah_kasis.toString()
             myTextView[i].textSize = 8f
+            myTextView[i].typeface = Typeface.DEFAULT
+            myTextView[i].setTextColor(Color.BLACK)
             myTextView.get(i).layoutParams = param
-//            val text = TextView(requireContext())
-//            text.text = listData.get(i).jumlah_kasis.toString()
             binding.linTopValue.addView(myTextView[i])
         }
         setupBarChart(barEntriesList,label)

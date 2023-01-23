@@ -2,6 +2,7 @@ package com.systudio.datacovid19.view.fragment
 
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -33,6 +34,8 @@ import kotlinx.android.synthetic.main.activity_bar_chart.*
 import kotlinx.android.synthetic.main.custom_legend_filter.*
 import kotlinx.android.synthetic.main.layout_stackbar_chart.*
 import kotlinx.android.synthetic.main.layout_stackbar_chart.view.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 /**
@@ -45,6 +48,12 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
 
     private var _binding :  FragmentStackBarBinding? = null
     private val binding get() = _binding!!
+    private var isSembuhClick : Boolean = false
+    private var isDirawatClick : Boolean = false
+    private var isMeninggalClick : Boolean = false
+    lateinit var myTextView: ArrayList<TextView>
+    lateinit var ld : List<ListData>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,16 +61,33 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
         // Inflate the layout for this fragment
         _binding = FragmentStackBarBinding.inflate(inflater,container,false)
         initVm()
+        setupView()
         return binding.root
     }
 
+    private fun setupView(){
+        dataProces(ld)
+        //onclick sembuh
+        binding.linSembuhStack.setOnClickListener {
+            isSembuhClick = true
+            dataProces(ld)
+        }
+        binding.linDirawatStack.setOnClickListener {
+            isDirawatClick = true
+            dataProces(ld)
+        }
+        binding.meninggalTvstack.setOnClickListener {
+            isMeninggalClick = true
+            dataProces(ld)
+        }
+    }
     private fun initVm(){
         val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         viewModel.fetchLiveData().observe(requireActivity()) {
             if (it != null) {
                 //setupStackedBarChart(it)
                 //setupNewStackedBarChart(it)
-                dataProces(it)
+                ld = it
             }
         }
         viewModel.fetchAllData()
@@ -100,30 +126,53 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
             isEnabled = false
         }
     }
+
     private fun dataProces(listData: List<ListData>){
-        val myTextView = arrayListOf<TextView>()
+        myTextView = ArrayList()
+        val barEntriesList = ArrayList<BarEntry>()
+        val label = ArrayList<String>()
+//        for (i in 0..5){
+//            val floatArray = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_dirawat.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
+//            barEntriesList.add(BarEntry(i.toFloat(),floatArray))
+//            label.add(listData.get(i).key)
+//            myTextView.add(TextView(requireContext()))
+//        }
+        for (i in 0..5){
+            var values = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_dirawat.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
+            if (isSembuhClick){
+                 values = floatArrayOf(listData.get(i).jumlah_dirawat.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
+                 isSembuhClick = false
+            }else if (isDirawatClick){
+                 values = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
+                 isDirawatClick = false
+            }else if (isMeninggalClick){
+                 values = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_dirawat.toFloat())
+                 isMeninggalClick = false
+            }
+            barEntriesList.add(BarEntry(i.toFloat(),values))
+            label.add(listData.get(i).key)
+            myTextView.add(TextView(requireContext()))
+        }
+        //Log.d("stackbar dataproses", "dataProces: "+barEntriesList.get(1).yVals.get(0))
+        setupStackBarChart(barEntriesList,label)
+        setupValue(listData)
+    }
+
+    private fun setupValue(listData: List<ListData>){
         val param = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
-        param.setMargins(5,4,4,4)
-        val barEntriesList = ArrayList<BarEntry>()
-        val label = ArrayList<String>()
-        for (i in 0..5){
-            val floatArray = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_dirawat.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
-            barEntriesList.add(BarEntry(i.toFloat(),floatArray))
-            label.add(listData.get(i).key)
-            myTextView.add(TextView(requireContext()))
-        }
+        param.setMargins(25,10,10,10)
         for (i in myTextView.indices) {
             myTextView[i].text = listData.get(i).jumlah_kasis.toString()
             myTextView[i].textSize = 8f
             myTextView.get(i).layoutParams = param
+            myTextView[i].typeface = Typeface.DEFAULT
+            myTextView[i].setTextColor(Color.BLACK)
             binding.linStackTotaldata.addView(myTextView[i])
-            Log.d("stackbar dataproses", "dataProces: i"+i)
+            //Log.d("stackbar dataproses", "dataProces: i"+i)
         }
-        Log.d("stackbar dataproses", "dataProces: "+myTextView.size)
-        setupStackBarChart(barEntriesList,label)
     }
 
     private fun setupStackedBarChart(listData: List<ListData>){
@@ -379,9 +428,20 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
 
     private fun getColor() : MutableList<Int>{
         val mutableListInt : MutableList<Int> = mutableListOf()
-        mutableListInt.add(Color.GREEN)
-        mutableListInt.add(Color.BLUE)
-        mutableListInt.add(Color.RED)
+        if (isSembuhClick){
+            mutableListInt.add(Color.BLUE)
+            mutableListInt.add(Color.RED)
+        }else if (isDirawatClick){
+            mutableListInt.add(Color.GREEN)
+            mutableListInt.add(Color.RED)
+        }else if (isMeninggalClick){
+            mutableListInt.add(Color.BLUE)
+            mutableListInt.add(Color.RED)
+        }else {
+            mutableListInt.add(Color.GREEN)
+            mutableListInt.add(Color.BLUE)
+            mutableListInt.add(Color.RED)
+        }
         return mutableListInt
     }
 
