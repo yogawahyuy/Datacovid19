@@ -1,7 +1,9 @@
 package com.systudio.datacovid19.view.fragment
 
 import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +11,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.components.LegendEntry
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
@@ -34,6 +37,8 @@ class PieChartFragment : Fragment() {
 
     private var _binding : FragmentPieChartBinding? = null
     private val binding get() = _binding!!
+    private val removeIndex = ArrayList<Int>()
+    lateinit var listData: List<ListData>
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,7 +53,8 @@ class PieChartFragment : Fragment() {
         viewModel.fetchLiveData().observe(requireActivity()) {
             if (it != null) {
                 //setupPieChart(it)
-                dataProces(it)
+                listData = it
+                dataProces()
             }
         }
         viewModel.fetchAllData()
@@ -68,7 +74,7 @@ class PieChartFragment : Fragment() {
             description.isEnabled = false
             setExtraOffsets(5f,10f,5f,5f)
             dragDecelerationFrictionCoef = 0.95f
-            centerText = "Jumlah Sembuh"
+            centerText = "Kasus"
             setCenterTextColor(Color.BLACK)
             setDrawCenterText(true)
             holeRadius = 58f
@@ -83,10 +89,13 @@ class PieChartFragment : Fragment() {
             highlightValue(null)
             setTransparentCircleAlpha(110)
             setTransparentCircleColor(Color.WHITE)
+            invalidate()
+            setupFilterBtn()
         }
+
         val legend = binding.piechart.legend
         legend.apply {
-            isEnabled = true
+            isEnabled = false
             isWordWrapEnabled = true
             verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
             horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
@@ -96,24 +105,102 @@ class PieChartFragment : Fragment() {
             setDrawInside(false)
             orientation = Legend.LegendOrientation.HORIZONTAL
         }
+
     }
 
-    private fun dataProces(listData: List<ListData>){
-        val sembuh = ArrayList<PieEntry>()
-        for (i in 0..5 ){
-            sembuh.add(PieEntry(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).key))
-        }
+    private fun dataProces(){
+        val pieEntry = ArrayList<PieEntry>()
+        val recovered = ArrayList<Float>()
+        val death = ArrayList<Float>()
+        val treated = ArrayList<Float>()
+
+        val conditionalList = ArrayList<ArrayList<Float>>()
+        val filterCondition = ArrayList<ArrayList<Float>>()
         val color = ArrayList<Int>()
+        val filterColor = ArrayList<Int>()
+
+        var totalTreated = 0f
+        var totalRecovered = 0f
+        var totalDeath = 0f
+
+        for (i in 0..5 ){
+            totalTreated += listData.get(i).jumlah_dirawat.toFloat()
+            totalRecovered += listData.get(i).jumlah_sembuh.toFloat()
+            totalDeath += listData.get(i).jumlah_meninggal.toFloat()
+        }
+
+        recovered.add(totalRecovered)
+        death.add(totalDeath)
+        treated.add(totalTreated)
+
+        conditionalList.add(recovered)
+        conditionalList.add(death)
+        conditionalList.add(treated)
+
+        color.add(Color.GREEN)
         color.add(Color.RED)
         color.add(Color.BLUE)
-        color.add(Color.YELLOW)
-        color.add(Color.GREEN)
-        color.add(Color.GRAY)
-        color.add(Color.CYAN)
 
-        setupPieCharts(sembuh,color)
+        if (removeIndex.size > 0){
+            if (removeIndex.size != conditionalList.size){
+                for (index in removeIndex){
+                    filterCondition.add(conditionalList[index])
+                    filterColor.add(color[index])
+                }
+                for (filterIndex in filterCondition){
+                    conditionalList.remove(filterIndex)
+                }
+                for (colors in filterColor){
+                    color.remove(colors)
+                }
+            }
+        }
+        if (conditionalList.size != removeIndex.size){
+            for (x in 0 until conditionalList.size){
+                val values = conditionalList[x][0]
+                pieEntry.add(PieEntry(values))
+            }
+            setupPieCharts(pieEntry,color)
+        } else {
+            binding.piechart.clear()
+            binding.piechart.setNoDataTextColor(Color.BLACK)
+            binding.piechart.invalidate()
+        }
+
     }
 
+    private fun setupFilterBtn(){
+        binding.linPiechartdki.setOnClickListener {
+            if (!removeIndex.contains(0)){
+                removeIndex.add(0)
+                binding.dkiTvPie.paintFlags = binding.dkiTvPie.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+            }else{
+                binding.dkiTvPie.paintFlags = binding.dkiTvPie.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                removeIndex.remove(0)
+            }
+            dataProces()
+        }
+        binding.linChartjabar.setOnClickListener {
+            if (!removeIndex.contains(1)){
+                removeIndex.add(1)
+                binding.jabarTvline.paintFlags = binding.jabarTvline.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+            } else{
+                removeIndex.remove(1)
+                binding.jabarTvline.paintFlags = binding.jabarTvline.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+            }
+            dataProces()
+        }
+        binding.linChartjatengl.setOnClickListener {
+            if (!removeIndex.contains(2)){
+                removeIndex.add(2)
+                binding.jatengTvlinechart.paintFlags = binding.jatengTvlinechart.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
+            } else {
+                binding.jatengTvlinechart.paintFlags = binding.jatengTvlinechart.paintFlags and (Paint.ANTI_ALIAS_FLAG)
+                removeIndex.remove(2)
+            }
+            dataProces()
+        }
+    }
     private fun setupPieChart(listData: List<ListData>){
         binding.piechart.description.isEnabled = false
         binding.piechart.setExtraOffsets(5f,10f,5f,5f)

@@ -41,12 +41,75 @@
             android:id="@+id/rel_lay_pieChart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            >
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/piechart"
                 android:visibility="visible"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
+            <LinearLayout
+                android:id="@+id/rel_custom_legend"
+                android:layout_alignParentBottom="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="16dp">
+                <LinearLayout
+                    android:id="@+id/lin_piechartdki"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginStart="16dp">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/sembuh"/>
+                    <TextView
+                        android:id="@+id/dkiTvPie"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Sembuh"
+                        android:textColor="@color/black"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_marginStart="16dp"
+                    android:id="@+id/lin_chartjabar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/meninggal"/>
+                    <TextView
+                        android:id="@+id/jabarTvline"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Meninggal"
+                        android:textColor="@color/black"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/lin_chartjatengl"
+                    android:layout_marginStart="16dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/dirawat"/>
+                    <TextView
+                        android:id="@+id/jatengTvlinechart"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Dirawat"
+                        android:textColor="@color/black"/>
+                </LinearLayout>
+            </LinearLayout>
+
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
     <include android:id="@+id/nointernet" layout="@layout/layout_no_internet_conn" android:visibility="gone"/>

@@ -48,23 +48,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginStart="56dp">
-                <TextView
-                    android:id="@+id/tv_combine_totaldata"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Sembuh : 101010"
-                    android:textColor="@color/black"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="16dp"
-                    android:visibility="gone"/>
-                <TextView
-                    android:id="@+id/tv_combine_totalperprovinsi"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="DKI"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:visibility="gone"/>
             </LinearLayout>
             <com.github.mikephil.charting.charts.CombinedChart
                 android:id="@+id/combinedChart"

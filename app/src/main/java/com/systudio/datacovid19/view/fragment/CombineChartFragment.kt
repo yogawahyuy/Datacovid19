@@ -35,6 +35,7 @@ import kotlinx.android.synthetic.main.layout_combine_chart.view.*
 class CombineChartFragment : Fragment() {
     private var _binding : FragmentCombineChartBinding? = null
     private val binding get() = _binding!!
+    lateinit var ld: List<ListData>
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,6 +43,7 @@ class CombineChartFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentCombineChartBinding.inflate(inflater,container,false)
         initVm()
+        setupCombinedChart(ld)
         return binding.root
     }
 
@@ -49,7 +51,8 @@ class CombineChartFragment : Fragment() {
         val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         viewModel.fetchLiveData().observe(requireActivity()) {
             if (it != null) {
-                setupCombinedChart(it)
+                //setupCombinedChart(it)
+                ld = it
             }else{
                 binding.combineFragmentToolbar.visibility = View.GONE
                 binding.nointernet.relNointernet.visibility = View.VISIBLE
@@ -57,6 +60,7 @@ class CombineChartFragment : Fragment() {
         }
         viewModel.fetchAllData()
     }
+
     private fun setupCombinedChart(listData: List<ListData>){
         val combinedata = CombinedData()
         combinedata.setData(generateLineData(listData))
@@ -121,13 +125,6 @@ class CombineChartFragment : Fragment() {
             totalDirawat += listData.get(i).jumlah_dirawat
         }
 
-        var totalKasus = 0
-        totalKasus += totalSembuh + totalDirawat + totalMeninggal
-        binding.tvCombineTotalperprovinsi.visibility=View.GONE
-        val isiTv = ""+listData.get(0).jumlah_kasis + ", "+ listData.get(1).jumlah_kasis+" "+ listData.get(2).jumlah_kasis +
-                ", "+ listData.get(3).jumlah_kasis + ", "+ listData.get(4).jumlah_kasis +", "+listData.get(5).jumlah_kasis
-       // binding.tvCombineTotaldata.text = isiTv
-        //tv_combine_totaldata.text = "total sembuh : " + totalSembuh+ ", Total dirawat : " + totalDirawat +", Total Meninggal : "+totalMeninggal+", Total Kasus : "+totalKasus
         val sembuhLineDataset = LineDataSet(sembuh,"Sembuh")
         sembuhLineDataset.apply {
             mode = LineDataSet.Mode.CUBIC_BEZIER

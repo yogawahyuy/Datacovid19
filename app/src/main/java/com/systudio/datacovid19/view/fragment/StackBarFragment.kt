@@ -52,7 +52,8 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
     private var isDirawatClick : Boolean = false
     private var isMeninggalClick : Boolean = false
     lateinit var myTextView: ArrayList<TextView>
-    lateinit var ld : List<ListData>
+    lateinit var listData: List<ListData>
+    private val removeIndex = arrayListOf<Int>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,110 +62,130 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
         // Inflate the layout for this fragment
         _binding = FragmentStackBarBinding.inflate(inflater,container,false)
         initVm()
-        setupView()
         return binding.root
     }
 
-    private fun setupView(){
-        dataProces(ld)
-        //onclick sembuh
-        binding.linSembuhStack.setOnClickListener {
-            isSembuhClick = true
-            dataProces(ld)
-        }
-        binding.linDirawatStack.setOnClickListener {
-            isDirawatClick = true
-            dataProces(ld)
-        }
-        binding.meninggalTvstack.setOnClickListener {
-            isMeninggalClick = true
-            dataProces(ld)
-        }
-    }
     private fun initVm(){
         val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         viewModel.fetchLiveData().observe(requireActivity()) {
             if (it != null) {
-                //setupStackedBarChart(it)
-                //setupNewStackedBarChart(it)
-                ld = it
+                listData = it
+                dataProcess()
             }
         }
         viewModel.fetchAllData()
     }
 
-    private fun setupStackBarChart(entries: List<BarEntry>, label: List<String>){
+    private fun setupStackBarChart(entries: List<BarEntry>, colorList: List<Int>, label: List<String>){
         val dataset = BarDataSet(entries,"")
-        dataset.colors = getColor()
+        dataset.colors = colorList
         dataset.setDrawValues(false)
         val stackChart = binding.stackbarchart
         stackChart.apply {
-            setPinchZoom(false)
-            setDrawGridBackground(false)
-            setDrawBarShadow(false)
-            isHighlightFullBarEnabled = false
-            animateXY(200,500)
-            legend.isEnabled = false
+            animateY(1000)
+            setDrawValueAboveBar(false)
+            setDrawMarkers(false)
+            isDoubleTapToZoomEnabled = false
             description.isEnabled = false
+            legend.isEnabled = false
             data = BarData(dataset)
+            invalidate()
+
+            setupFilterBtn()
         }
         val xAxis = binding.stackbarchart.xAxis
         xAxis.apply {
             setDrawGridLines(false)
+            setDrawLabels(true)
+            setDrawAxisLine(true)
+            textSize = 11f
             position = XAxis.XAxisPosition.BOTTOM
-            granularity = 2f
+            isGranularityEnabled = true
+            granularity = 1f
+            setLabelCount(3, false)
             valueFormatter = IndexAxisValueFormatter(label)
-
         }
         val leftAxis = binding.stackbarchart.axisLeft
         leftAxis.apply {
             setDrawGridLines(false)
             axisMinimum = 0f
+            setDrawLabels(true)
+            setDrawAxisLine(true)
         }
         val rightAxis = binding.stackbarchart.axisRight
         rightAxis.apply {
-            isEnabled = false
+            setDrawGridLines(false)
+            setDrawLabels(false)
+            setDrawAxisLine(false)
         }
+        setupTopValue()
     }
 
-    private fun dataProces(listData: List<ListData>){
-        myTextView = ArrayList()
-        val barEntriesList = ArrayList<BarEntry>()
-        val label = ArrayList<String>()
-//        for (i in 0..5){
-//            val floatArray = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_dirawat.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
-//            barEntriesList.add(BarEntry(i.toFloat(),floatArray))
-//            label.add(listData.get(i).key)
-//            myTextView.add(TextView(requireContext()))
-//        }
+    private fun dataProcess(){
+        val barEntry = ArrayList<BarEntry>()
+        val cityList = ArrayList<String>()
+        val deaths = ArrayList<Float>()
+        val treated = ArrayList<Float>()
+        val recovered = ArrayList<Float>()
+
+        val conditionList = ArrayList<ArrayList<Float>>()
+        val filterCondition = ArrayList<ArrayList<Float>>()
+        val colors = ArrayList<Int>()
+        val filterColor = ArrayList<Int>()
+
         for (i in 0..5){
-            var values = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_dirawat.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
-            if (isSembuhClick){
-                 values = floatArrayOf(listData.get(i).jumlah_dirawat.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
-                 isSembuhClick = false
-            }else if (isDirawatClick){
-                 values = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
-                 isDirawatClick = false
-            }else if (isMeninggalClick){
-                 values = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_dirawat.toFloat())
-                 isMeninggalClick = false
-            }
-            barEntriesList.add(BarEntry(i.toFloat(),values))
-            label.add(listData.get(i).key)
-            myTextView.add(TextView(requireContext()))
+            cityList.add(listData.get(i).key)
+            recovered.add(listData[i].jumlah_sembuh.toFloat())
+            treated.add(listData[i].jumlah_dirawat.toFloat())
+            deaths.add(listData[i].jumlah_meninggal.toFloat())
         }
-        //Log.d("stackbar dataproses", "dataProces: "+barEntriesList.get(1).yVals.get(0))
-        setupStackBarChart(barEntriesList,label)
-        setupValue(listData)
+
+        conditionList.add(recovered)
+        conditionList.add(treated)
+        conditionList.add(deaths)
+        colors.add(Color.GREEN)
+        colors.add(Color.BLUE)
+        colors.add(Color.RED)
+
+        if (removeIndex.size > 0){
+            if (removeIndex.size != conditionList.size){
+                for (index in removeIndex){
+                    filterCondition.add(conditionList[index])
+                    filterColor.add(colors[index])
+                }
+                for (condition in filterCondition){
+                    conditionList.remove(condition)
+                }
+                for (color in filterColor){
+                    colors.remove(color)
+                }
+            }
+        }
+        if (conditionList.size != removeIndex.size){
+            for (x in 0..5){
+                val values = FloatArray(conditionList.size)
+                for (y in 0 until conditionList.size){
+                    values[y] = conditionList[y][x]
+                }
+                barEntry.add(BarEntry(x.toFloat(),values))
+            }
+            setupStackBarChart(barEntry,colors,cityList)
+        }else{
+            binding.stackbarchart.clear()
+            binding.stackbarchart.setNoDataTextColor(Color.BLACK)
+            binding.stackbarchart.invalidate()
+        }
     }
 
-    private fun setupValue(listData: List<ListData>){
+    private fun setupTopValue(){
+        myTextView = ArrayList()
         val param = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
         param.setMargins(25,10,10,10)
-        for (i in myTextView.indices) {
+        for (i in 0..5) {
+            myTextView.add(TextView(requireContext()))
             myTextView[i].text = listData.get(i).jumlah_kasis.toString()
             myTextView[i].textSize = 8f
             myTextView.get(i).layoutParams = param
@@ -175,274 +196,38 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
         }
     }
 
-    private fun setupStackedBarChart(listData: List<ListData>){
-        val legend = binding.stackbarchart.legend
-        legend.isEnabled = false
-
-        var totalSembuh = 0
-        var totalMeninggal = 0
-        var totalDirawat = 0
-        var totalKasus = 0
-        val dataStackBar = ArrayList<BarEntry>()
-        val sembuh = ArrayList<BarEntry>()
-        val meninggal = ArrayList<BarEntry>()
-        val dirawat = ArrayList<BarEntry>()
-        for (i in 0..5 ){
-            sembuh.add(BarEntry(i.toFloat(),listData.get(i).jumlah_sembuh.toFloat()))
-            meninggal.add(BarEntry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
-            dirawat.add(BarEntry(i.toFloat(),listData.get(i).jumlah_dirawat.toFloat()))
-            val floatArray = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_dirawat.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
-            //dataStackBar.add(BarEntry(i.toFloat(),floatArray))
-            //dataStackBar.add(BarEntry(i.toFloat(),listData.get(i).jumlah_sembuh.toFloat()))
-            //dataStackBar.add(BarEntry(i.toFloat(),listData.get(i).jumlah_dirawat.toFloat()))
-            //dataStackBar.add(BarEntry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
-            totalSembuh += listData.get(i).jumlah_sembuh
-        }
-
-        for (i in 0..5 ){
-            //meninggal.add(BarEntry(i.toFloat(),listData.get(i).jumlah_meninggal.toFloat()))
-            totalMeninggal += listData.get(i).jumlah_meninggal
-        }
-
-        for (i in 0..5 ){
-            //dirawat.add(BarEntry(i.toFloat(),listData.get(i).jumlah_dirawat.toFloat()))
-            totalDirawat += listData.get(i).jumlah_dirawat
-        }
-        //add total on top chart
-        totalKasus += totalSembuh + totalDirawat + totalMeninggal
-        binding.tvStackTotaldata.visibility = View.GONE
-        val isiTv = ""+listData.get(0).jumlah_kasis + ", "+ listData.get(1).jumlah_kasis+" "+ listData.get(2).jumlah_kasis +
-                ", "+ listData.get(3).jumlah_kasis + ", "+ listData.get(4).jumlah_kasis +", "+listData.get(5).jumlah_kasis
-        binding.tvStackTotalperprovinsi.text = isiTv
-        val sembuhBarDataSet = BarDataSet(sembuh,"")
-        sembuhBarDataSet.color = Color.GREEN
-        val meninggalBarDataSet = BarDataSet(meninggal,"")
-        meninggalBarDataSet.color = Color.RED
-        val dirawatBarDataSet = BarDataSet(dirawat,"")
-        dirawatBarDataSet.color = Color.BLUE
-        dirawatBarDataSet.setDrawValues(false)
-
-//        val dataStackDataSet = BarDataSet(dataStackBar,"")
-//        val colors = arrayOf(Color.GREEN,Color.BLUE,Color.RED)
-//        dataStackDataSet.colors = colors.toMutableList()
-        val dataset = ArrayList<IBarDataSet>()
-        dataset.add(sembuhBarDataSet)
-        dataset.add(dirawatBarDataSet)
-        dataset.add(meninggalBarDataSet)
-
-        binding.stackbarchart.description.isEnabled = false
-        binding.stackbarchart.xAxis.setDrawGridLines(false)
-        binding.stackbarchart.axisLeft.setDrawGridLines(false)
-        binding.stackbarchart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        binding.stackbarchart.axisRight.isEnabled = false
-        binding.stackbarchart.axisLeft.axisMinimum = 0f
-        binding.stackbarchart.setTouchEnabled(true)
-        binding.stackbarchart.isDragEnabled = true
-        binding.stackbarchart.setScaleEnabled(true)
-        binding.stackbarchart.data = BarData(dataset)
-        //binding.stackbarchart.data = BarData(dataStackDataSet)
-        binding.stackbarchart.animateXY(200,500)
-        binding.stackbarchart.setDrawValueAboveBar(true)
-        binding.stackbarchart.setFitBars(true)
-        binding.stackbarchart.data.getGroupWidth(3f,2f)
-        binding.stackbarchart.axisLeft.spaceMin = 1f
-
-        val label = ArrayList<String>()
-        for (i in 0..5){
-            label.add(listData.get(i).key)
-        }
-        binding.stackbarchart.xAxis?.valueFormatter = IndexAxisValueFormatter(label)
-        binding.stackbarchart.xAxis.isGranularityEnabled = true
-        binding.stackbarchart.xAxis.granularity = 2f
-        val marker = StackBarChartMarker(requireContext(),R.layout.custom_marker_view,label)
-        binding.stackbarchart.marker = marker
-
-        // legend filter
-        var state = 0
+    private fun setupFilterBtn(){
         binding.linSembuhStack.setOnClickListener {
-            if (state==0) {
-                sembuhBarDataSet.isVisible = false
-                Log.d("stackbarfragment", "setupNewStackedBarChart: "+binding.stackbarchart.data.dataSets.size)
-                binding.stackbarchart.invalidate()
+            if (!removeIndex.contains(0)){
+                removeIndex.add(0)
                 binding.sembuhTvStack.paintFlags = binding.sembuhTvStack.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
-                state = 1
-            }else {
-                sembuhBarDataSet.isVisible = true
-                binding.stackbarchart.invalidate()
+            } else{
                 binding.sembuhTvStack.paintFlags = binding.sembuhTvStack.paintFlags and (Paint.ANTI_ALIAS_FLAG)
-                state = 0
+                removeIndex.remove(0)
             }
+            dataProcess()
         }
-        var stateDirawat = 0
+
         binding.linDirawatStack.setOnClickListener {
-            if (stateDirawat==0){
-                dirawatBarDataSet.isVisible = false
-                binding.stackbarchart.invalidate()
+            if (!removeIndex.contains(1)){
+                removeIndex.add(1)
                 binding.dirawatTvStack.paintFlags = binding.dirawatTvStack.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
-                stateDirawat = 1
-            }else{
-                dirawatBarDataSet.isVisible = true
-                binding.stackbarchart.invalidate()
+            } else{
                 binding.dirawatTvStack.paintFlags = binding.dirawatTvStack.paintFlags and (Paint.ANTI_ALIAS_FLAG)
-                stateDirawat = 0
+                removeIndex.remove(1)
             }
+            dataProcess()
         }
-        var stateMeninggal = 0
         binding.linMeninggalStack.setOnClickListener {
-            if (stateMeninggal==0){
-                meninggalBarDataSet.isVisible = false
-                binding.stackbarchart.invalidate()
+            if (!removeIndex.contains(2)){
+                removeIndex.add(2)
                 binding.meninggalTvstack.paintFlags = binding.meninggalTvstack.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
-                stateMeninggal = 1
-            }else{
-                meninggalBarDataSet.isVisible = true
-                binding.stackbarchart.invalidate()
+            } else{
                 binding.meninggalTvstack.paintFlags = binding.meninggalTvstack.paintFlags and (Paint.ANTI_ALIAS_FLAG)
-                stateMeninggal = 0
+                removeIndex.remove(2)
             }
+            dataProcess()
         }
-    }
-
-    private fun setupNewStackedBarChart(listData: List<ListData>){
-        binding.stackbarchart.setMaxVisibleValueCount(40)
-        binding.stackbarchart.legend.isEnabled = false
-        binding.stackbarchart.description.isEnabled = false
-        binding.stackbarchart.setPinchZoom(false)
-        binding.stackbarchart.setDrawGridBackground(false)
-        binding.stackbarchart.setDrawBarShadow(false)
-        binding.stackbarchart.setDrawValueAboveBar(false)
-        binding.stackbarchart.isHighlightFullBarEnabled = false
-        binding.stackbarchart.xAxis.setDrawGridLines(false)
-        binding.stackbarchart.axisLeft.setDrawGridLines(false)
-        binding.stackbarchart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        binding.stackbarchart.axisRight.isEnabled = false
-        binding.stackbarchart.axisLeft.axisMinimum = 0f
-        binding.stackbarchart.animateXY(200,500)
-
-        val leftAxis = binding.stackbarchart.axisLeft
-        leftAxis.valueFormatter = MyAxisValueFormatter()
-        leftAxis.axisMinimum = 0f
-        binding.stackbarchart.axisRight.isEnabled = false
-        //total data on top
-        var totalSembuh = 0
-        var totalMeninggal = 0
-        var totalDirawat = 0
-        var totalKasus = 0
-
-        //setting data
-        val data = ArrayList<BarEntry>()
-        for (i in 0..5){
-            val cumulativeData = floatArrayOf(listData.get(i).jumlah_sembuh.toFloat(),listData.get(i).jumlah_dirawat.toFloat(),listData.get(i).jumlah_meninggal.toFloat())
-            data.add(BarEntry(i.toFloat(),cumulativeData))
-            totalSembuh += listData.get(i).jumlah_sembuh
-            totalDirawat += listData.get(i).jumlah_dirawat
-            totalMeninggal += listData.get(i).jumlah_meninggal
-        }
-
-        totalKasus += totalSembuh + totalDirawat + totalMeninggal
-        binding.tvStackTotaldata.visibility = View.GONE
-        val isiTv = ""+listData.get(0).jumlah_kasis + ", "+ listData.get(1).jumlah_kasis+" "+ listData.get(2).jumlah_kasis +
-                ", "+ listData.get(3).jumlah_kasis + ", "+ listData.get(4).jumlah_kasis +", "+listData.get(5).jumlah_kasis
-        binding.tvStackTotalperprovinsi.text = isiTv
-
-        val bardata : BarDataSet
-        if (binding.stackbarchart.data != null && binding.stackbarchart.data.dataSetCount > 0){
-            bardata = binding.stackbarchart.data.getDataSetByIndex(0) as BarDataSet
-            bardata.values = data
-            binding.stackbarchart.data.notifyDataChanged()
-            binding.stackbarchart.notifyDataSetChanged()
-        }else{
-            bardata = BarDataSet(data,"")
-            bardata.setDrawValues(false)
-            bardata.setDrawIcons(false)
-            bardata.colors = getColor()
-
-            val dataset = ArrayList<IBarDataSet>()
-            dataset.add(bardata)
-
-            val label = ArrayList<String>()
-            for (i in 0..5){
-                label.add(listData.get(i).key)
-            }
-            val data1 = BarData(dataset)
-            data1.setValueFormatter(MyAxisValueFormatter())
-            val formater = IndexAxisValueFormatter(label)
-            binding.stackbarchart.xAxis.valueFormatter = formater
-            binding.stackbarchart.xAxis.granularity = 2f
-            binding.stackbarchart.data = data1
-            val marker = StackBarChartMarker(requireContext(),R.layout.custom_marker_view,label)
-            binding.stackbarchart.marker = marker
-            Log.d("stackbarfragment", "setupNewStackedBarChart: "+bardata.values.get(0).yVals.get(0).toString())
-            Log.d("stackbarfragment", "setupNewStackedBarChart: "+binding.stackbarchart.data.dataSets.get(0))
-        }
-
-        binding.stackbarchart.setFitBars(true)
-        binding.stackbarchart.invalidate()
-        // legend filter
-        var state = 0
-        binding.linSembuhStack.setOnClickListener {
-            if (state==0) {
-                //sembuhBarDataSet.isVisible = false
-                Log.d("stackbarfrag onclik", "setupNewStackedBarChart: " +binding.stackbarchart.barData.dataSets.get(0).getIndexInEntries(1).toString())
-                binding.stackbarchart.data.dataSets.get(0).isVisible = false
-                binding.stackbarchart.invalidate()
-                binding.sembuhTvStack.paintFlags = binding.sembuhTvStack.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
-                state = 1
-            }else {
-                //sembuhBarDataSet.isVisible = true
-                binding.stackbarchart.data.dataSets.get(0).isVisible = true
-                binding.stackbarchart.invalidate()
-                binding.sembuhTvStack.paintFlags = binding.sembuhTvStack.paintFlags and (Paint.ANTI_ALIAS_FLAG)
-                state = 0
-            }
-        }
-        var stateDirawat = 0
-        binding.linDirawatStack.setOnClickListener {
-            if (stateDirawat==0){
-                //dirawatBarDataSet.isVisible = false
-                binding.stackbarchart.invalidate()
-                binding.dirawatTvStack.paintFlags = binding.dirawatTvStack.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
-                stateDirawat = 1
-            }else{
-                //dirawatBarDataSet.isVisible = true
-                binding.stackbarchart.invalidate()
-                binding.dirawatTvStack.paintFlags = binding.dirawatTvStack.paintFlags and (Paint.ANTI_ALIAS_FLAG)
-                stateDirawat = 0
-            }
-        }
-        var stateMeninggal = 0
-        binding.linMeninggalStack.setOnClickListener {
-            if (stateMeninggal==0){
-                //meninggalBarDataSet.isVisible = false
-                binding.stackbarchart.invalidate()
-                binding.meninggalTvstack.paintFlags = binding.meninggalTvstack.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
-                stateMeninggal = 1
-            }else{
-                //meninggalBarDataSet.isVisible = true
-                binding.stackbarchart.invalidate()
-                binding.meninggalTvstack.paintFlags = binding.meninggalTvstack.paintFlags and (Paint.ANTI_ALIAS_FLAG)
-                stateMeninggal = 0
-            }
-        }
-    }
-
-    private fun getColor() : MutableList<Int>{
-        val mutableListInt : MutableList<Int> = mutableListOf()
-        if (isSembuhClick){
-            mutableListInt.add(Color.BLUE)
-            mutableListInt.add(Color.RED)
-        }else if (isDirawatClick){
-            mutableListInt.add(Color.GREEN)
-            mutableListInt.add(Color.RED)
-        }else if (isMeninggalClick){
-            mutableListInt.add(Color.BLUE)
-            mutableListInt.add(Color.RED)
-        }else {
-            mutableListInt.add(Color.GREEN)
-            mutableListInt.add(Color.BLUE)
-            mutableListInt.add(Color.RED)
-        }
-        return mutableListInt
     }
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {

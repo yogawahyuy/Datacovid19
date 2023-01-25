@@ -52,7 +52,6 @@ class LineChartFragment : Fragment() {
         val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         viewModel.fetchLiveData().observe(requireActivity()) {
             if (it != null) {
-
                 dataProces(it)
             }else{
                 binding.cardviewLinechart.visibility = View.GONE
@@ -148,6 +147,7 @@ class LineChartFragment : Fragment() {
         }
 
     }
+
     private fun dataProces(listData: List<ListData>){
         val sembuhEntries = ArrayList<Entry>()
         val meninggalEntries = ArrayList<Entry>()
