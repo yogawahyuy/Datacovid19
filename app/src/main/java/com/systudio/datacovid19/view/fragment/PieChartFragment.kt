@@ -88,6 +88,7 @@ class PieChartFragment : Fragment() {
             data = PieData(dataSet)
             highlightValue(null)
             setTransparentCircleAlpha(110)
+            minAngleForSlices = 20f
             setTransparentCircleColor(Color.WHITE)
             invalidate()
             setupFilterBtn()

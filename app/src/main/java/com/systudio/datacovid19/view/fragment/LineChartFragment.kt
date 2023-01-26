@@ -38,6 +38,7 @@ class LineChartFragment : Fragment() {
 
     private var _binding : FragmentLineChartBinding? = null
     private val binding get() = _binding!!
+    private lateinit var listData: List<ListData>
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -52,7 +53,8 @@ class LineChartFragment : Fragment() {
         val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         viewModel.fetchLiveData().observe(requireActivity()) {
             if (it != null) {
-                dataProces(it)
+                listData = it
+                dataProces()
             }else{
                 binding.cardviewLinechart.visibility = View.GONE
                 binding.nointernet.relNointernet.visibility = View.VISIBLE
@@ -148,7 +150,7 @@ class LineChartFragment : Fragment() {
 
     }
 
-    private fun dataProces(listData: List<ListData>){
+    private fun dataProces(){
         val sembuhEntries = ArrayList<Entry>()
         val meninggalEntries = ArrayList<Entry>()
         val dirawatEntries = ArrayList<Entry>()

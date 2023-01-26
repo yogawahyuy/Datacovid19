@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.layout_stackbar_chart.*
 import kotlinx.android.synthetic.main.layout_stackbar_chart.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 
 
 /**
@@ -48,9 +49,6 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
 
     private var _binding :  FragmentStackBarBinding? = null
     private val binding get() = _binding!!
-    private var isSembuhClick : Boolean = false
-    private var isDirawatClick : Boolean = false
-    private var isMeninggalClick : Boolean = false
     lateinit var myTextView: ArrayList<TextView>
     lateinit var listData: List<ListData>
     private val removeIndex = arrayListOf<Int>()
@@ -183,10 +181,11 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
-        param.setMargins(25,10,10,10)
+        param.setMargins(30,10,10,10)
         for (i in 0..5) {
+            val number = listData.get(i).jumlah_kasis
             myTextView.add(TextView(requireContext()))
-            myTextView[i].text = listData.get(i).jumlah_kasis.toString()
+            myTextView[i].text = formatNumber(number)
             myTextView[i].textSize = 8f
             myTextView.get(i).layoutParams = param
             myTextView[i].typeface = Typeface.DEFAULT
@@ -239,6 +238,17 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
 
     override fun onNothingSelected() {
         TODO("Not yet implemented")
+    }
+
+    private fun formatNumber(number: Int): String {
+        if (number >= 1000000){
+            val formatter = DecimalFormat("#,###.#")
+            return formatter.format(number / 1000.0) + "K"
+        } else {
+            val formatter = DecimalFormat("#,###.#")
+            return formatter.format(number / 1000.0) +"K"
+        }
+
     }
 
 

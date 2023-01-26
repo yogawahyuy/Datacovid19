@@ -30,6 +30,7 @@ import com.systudio.datacovid19.utils.marker.BarChartMarkerView
 import kotlinx.android.synthetic.main.activity_bar_chart.*
 import kotlinx.android.synthetic.main.activity_bar_chart.barchart
 import kotlinx.android.synthetic.main.fragment_barchart.*
+import java.text.DecimalFormat
 
 /**
  * A simple [Fragment] subclass.
@@ -41,7 +42,7 @@ class BarchartFragment : Fragment() {
     private var _binding : FragmentBarchartBinding? = null
     private val binding get() = _binding!!
     lateinit var myTextView: ArrayList<TextView>
-    //private lateinit var ld: List<ListData>
+    private lateinit var listData: List<ListData>
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -57,9 +58,9 @@ class BarchartFragment : Fragment() {
         val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         viewModel.fetchLiveData().observe(requireActivity()) {
             if (it != null) {
-                //setupBarchart(it)
-                //ld = it
-                dataProses(it)
+                listData = it
+                dataProses()
+                setupTopValue()
             }else{
                 binding.cardviewBarchart.visibility = View.GONE
                 binding.nointernet.relNointernet.visibility = View.VISIBLE
@@ -77,7 +78,7 @@ class BarchartFragment : Fragment() {
         barChart.apply {
             description.isEnabled = false
             data = BarData(dataSet)
-            animateXY(200,500)
+            animateY(1000)
             axisLeft.setDrawGridLines(false)
             axisRight.isEnabled = false
             legend.isEnabled = false
@@ -90,27 +91,48 @@ class BarchartFragment : Fragment() {
             setDrawGridLines(false)
             valueFormatter = IndexAxisValueFormatter(label)
         }
-
+        //setupTopValue()
     }
 
-    private fun dataProses(listData: List<ListData>){
-        myTextView = ArrayList()
+    private fun dataProses(){
         val barEntriesList = ArrayList<BarEntry>()
         val label = ArrayList<String>()
-        val param = LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT)
-        param.setMargins(25,10,10,10)
         for (i in 0..5){
             barEntriesList.add(BarEntry(i.toFloat(),listData.get(i).jumlah_kasis.toFloat()))
             label.add(listData.get(i).key)
-            myTextView.add(TextView(requireContext()))
-            myTextView[i].text = listData.get(i).jumlah_kasis.toString()
-            myTextView[i].textSize = 8f
-            myTextView[i].typeface = Typeface.DEFAULT
-            myTextView[i].setTextColor(Color.BLACK)
-            myTextView.get(i).layoutParams = param
-            binding.linTopValue.addView(myTextView[i])
         }
         setupBarChart(barEntriesList,label)
+    }
+
+    private fun setupTopValue(){
+        myTextView = ArrayList()
+        val param = LayoutParams(
+            LayoutParams.WRAP_CONTENT,
+            LayoutParams.WRAP_CONTENT
+        )
+        param.setMargins(30,10,10,10)
+        for (i in 0..5) {
+            val number = listData.get(i).jumlah_kasis
+            myTextView.add(TextView(requireContext()))
+            myTextView[i].text = formatNumber(number)
+            myTextView[i].textSize = 8f
+            myTextView.get(i).layoutParams = param
+            myTextView[i].typeface = Typeface.DEFAULT
+            myTextView[i].setTextColor(Color.BLACK)
+            binding.linTopValue.addView(myTextView[i])
+        }
+        Log.d("barchart", "setupTopValue: "+myTextView.size)
+    }
+
+    private fun formatNumber(number: Int): String {
+        if (number >= 1000000){
+            val formatter = DecimalFormat("#,###.#")
+            return formatter.format(number / 1000.0) + "K"
+        } else {
+            val formatter = DecimalFormat("#,###.#")
+            return formatter.format(number / 1000.0) +"K"
+        }
+
     }
 
 }
