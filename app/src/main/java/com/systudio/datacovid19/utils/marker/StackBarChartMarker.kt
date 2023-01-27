@@ -14,7 +14,6 @@ class StackBarChartMarker(context: Context, layout: Int, private val label: Arra
         val xAxis = e?.x?.toInt() ?: 0
         tvmarkername?.text = label[xAxis]
         tvmarkerdata.text = e?.y.toString()
-        //tvmarkerdata.visibility = GONE
         super.refreshContent(e, highlight)
     }
 

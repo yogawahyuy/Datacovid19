@@ -28,6 +28,7 @@ import com.systudio.datacovid19.databinding.FragmentStackBarBinding
 import com.systudio.datacovid19.model.ListData
 import com.systudio.datacovid19.utils.MainViewModel
 import com.systudio.datacovid19.utils.MyAxisValueFormatter
+import com.systudio.datacovid19.utils.marker.BarChartMarkerView
 import com.systudio.datacovid19.utils.marker.StackBarChartMarker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_bar_chart.*
@@ -45,7 +46,7 @@ import java.text.DecimalFormat
  * create an instance of this fragment.
  */
 @AndroidEntryPoint
-class StackBarFragment : Fragment(), OnChartValueSelectedListener {
+class StackBarFragment : Fragment() {
 
     private var _binding :  FragmentStackBarBinding? = null
     private val binding get() = _binding!!
@@ -75,6 +76,7 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
     }
 
     private fun setupStackBarChart(entries: List<BarEntry>, colorList: List<Int>, label: List<String>){
+        val markerView = StackBarChartMarker(requireActivity(),R.layout.custom_marker_view,label as ArrayList<String>)
         val dataset = BarDataSet(entries,"")
         dataset.colors = colorList
         dataset.setDrawValues(false)
@@ -87,6 +89,7 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
             description.isEnabled = false
             legend.isEnabled = false
             data = BarData(dataset)
+            marker = markerView
             invalidate()
 
             setupFilterBtn()
@@ -229,16 +232,6 @@ class StackBarFragment : Fragment(), OnChartValueSelectedListener {
         }
     }
 
-    override fun onValueSelected(e: Entry?, h: Highlight?) {
-        val entry = e
-        if (entry?.y !=null){
-            Log.d("stackbarfrag", "onValueSelected: "+entry.data)
-        }
-    }
-
-    override fun onNothingSelected() {
-        TODO("Not yet implemented")
-    }
 
     private fun formatNumber(number: Int): String {
         if (number >= 1000000){
