@@ -386,7 +386,7 @@ class BarChartActivity : AppCompatActivity() {
             label.add(listData.get(i).key)
         }
         lineChart.xAxis?.valueFormatter = IndexAxisValueFormatter(label)
-        val marker = LineChartMarker(this,R.layout.custom_marker_view)
+        val marker = BarChartMarkerView(this,R.layout.custom_marker_view,label)
         layout_linechart.lineChart.marker = marker
 
         //legend filter

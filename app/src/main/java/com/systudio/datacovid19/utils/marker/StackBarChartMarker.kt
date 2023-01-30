@@ -8,7 +8,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
 import kotlinx.android.synthetic.main.custom_marker_view.view.*
 
-class StackBarChartMarker(context: Context, layout: Int, private val label: ArrayList<String>) : MarkerView(context,layout) {
+class StackBarChartMarker(context: Context, layout: Int, private val label: List<String>) : MarkerView(context,layout) {
 
     override fun refreshContent(e: Entry?, highlight: Highlight?) {
         val xAxis = e?.x?.toInt() ?: 0

@@ -15,6 +15,8 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.systudio.datacovid19.R
 import com.systudio.datacovid19.databinding.FragmentLineChartBinding
 import com.systudio.datacovid19.model.ListData
@@ -34,7 +36,7 @@ import kotlinx.android.synthetic.main.layout_stackbar_chart.*
  * create an instance of this fragment.
  */
 @AndroidEntryPoint
-class LineChartFragment : Fragment() {
+class LineChartFragment : Fragment(), OnChartValueSelectedListener {
 
     private var _binding : FragmentLineChartBinding? = null
     private val binding get() = _binding!!
@@ -51,7 +53,7 @@ class LineChartFragment : Fragment() {
 
     private fun initVm(){
         val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-        viewModel.fetchLiveData().observe(requireActivity()) {
+        viewModel.fetchLiveData().observe(viewLifecycleOwner) {
             if (it != null) {
                 listData = it
                 dataProces()
@@ -85,6 +87,8 @@ class LineChartFragment : Fragment() {
             circleRadius = 5f
             setCircleColor(Color.RED)
         }
+        val markerView = LineChartMarker(requireContext(),R.layout.custom_marker_view,label)
+
         val lineChart = binding.lineChart
         lineChart.apply {
             legend.isEnabled = false
@@ -92,6 +96,7 @@ class LineChartFragment : Fragment() {
             animateXY(200,500)
             axisRight.isEnabled = false
             data = LineData(dataSetSembuh,dataSetDirawat,dataSetMeninggal)
+            marker = markerView
         }
         val xAxis = binding.lineChart.xAxis
         xAxis.apply {
@@ -148,6 +153,9 @@ class LineChartFragment : Fragment() {
             }
         }
 
+        // setupTooltip
+        binding.lineChart.setOnChartValueSelectedListener(this)
+
     }
 
     private fun dataProces(){
@@ -163,5 +171,21 @@ class LineChartFragment : Fragment() {
         }
         setupLineChart(sembuhEntries,dirawatEntries,meninggalEntries,label)
     }
+
+    override fun onValueSelected(e: Entry?, h: Highlight?) {
+        val highlight = IntArray(binding.lineChart.data.dataSets.size)
+        for (i in 0 until binding.lineChart.data.dataSets.size){
+            val iDataSet = binding.lineChart.data.dataSets.get(i)
+            //for (j in 0 until iDataSet.)
+        }
+    }
+
+    override fun onNothingSelected() {
+        TODO("Not yet implemented")
+    }
+
+//    private fun setupValueSelectedListener() : OnChartValueSelectedListener{
+//
+//    }
 
 }

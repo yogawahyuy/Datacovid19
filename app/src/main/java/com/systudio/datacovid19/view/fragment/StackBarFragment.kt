@@ -46,7 +46,7 @@ import java.text.DecimalFormat
  * create an instance of this fragment.
  */
 @AndroidEntryPoint
-class StackBarFragment : Fragment() {
+class StackBarFragment : Fragment(){
 
     private var _binding :  FragmentStackBarBinding? = null
     private val binding get() = _binding!!
@@ -66,7 +66,7 @@ class StackBarFragment : Fragment() {
 
     private fun initVm(){
         val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-        viewModel.fetchLiveData().observe(requireActivity()) {
+        viewModel.fetchLiveData().observe(viewLifecycleOwner) {
             if (it != null) {
                 listData = it
                 dataProcess()
@@ -76,7 +76,7 @@ class StackBarFragment : Fragment() {
     }
 
     private fun setupStackBarChart(entries: List<BarEntry>, colorList: List<Int>, label: List<String>){
-        val markerView = StackBarChartMarker(requireActivity(),R.layout.custom_marker_view,label as ArrayList<String>)
+        val markerView = StackBarChartMarker(requireContext(),R.layout.custom_marker_view,label)
         val dataset = BarDataSet(entries,"")
         dataset.colors = colorList
         dataset.setDrawValues(false)
@@ -84,7 +84,7 @@ class StackBarFragment : Fragment() {
         stackChart.apply {
             animateY(1000)
             setDrawValueAboveBar(false)
-            setDrawMarkers(false)
+            setDrawMarkers(true)
             isDoubleTapToZoomEnabled = false
             description.isEnabled = false
             legend.isEnabled = false

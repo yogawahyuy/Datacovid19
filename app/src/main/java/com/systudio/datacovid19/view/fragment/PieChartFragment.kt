@@ -50,7 +50,7 @@ class PieChartFragment : Fragment() {
     }
     private fun initVm(){
         val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-        viewModel.fetchLiveData().observe(requireActivity()) {
+        viewModel.fetchLiveData().observe(viewLifecycleOwner) {
             if (it != null) {
                 //setupPieChart(it)
                 listData = it
