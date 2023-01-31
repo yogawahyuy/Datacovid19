@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
+import com.github.mikephil.charting.components.IMarker
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
@@ -20,6 +21,7 @@ import com.systudio.datacovid19.databinding.FragmentCombineChartBinding
 import com.systudio.datacovid19.databinding.FragmentPieChartBinding
 import com.systudio.datacovid19.model.ListData
 import com.systudio.datacovid19.utils.MainViewModel
+import com.systudio.datacovid19.utils.marker.BarChartMarkerView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_bar_chart.*
 import kotlinx.android.synthetic.main.layout_combine_chart.*
@@ -65,9 +67,14 @@ class CombineChartFragment : Fragment() {
 
     private fun setupCombinedChart(){
         val combinedata = CombinedData()
-        combinedata.setData(generateLineData())
         combinedata.setData(generateBarData())
-
+        combinedata.setData(generateLineData())
+        val label = ArrayList<String>()
+        for (i in 0..5){
+            label.add(listData.get(i).key)
+        }
+        //val markerView = BarChartMarkerView(requireContext(),R.layout.custom_marker_view, label)
+        val markerView : IMarker = BarChartMarkerView(requireContext(),R.layout.custom_marker_view,label)
         val combineChart = binding.combinedChart
         combineChart.apply {
             description.isEnabled = false
@@ -79,6 +86,8 @@ class CombineChartFragment : Fragment() {
             isDragXEnabled = true
             legend.isEnabled = false
             data = combinedata
+            marker = markerView
+            invalidate()
 
         }
 
@@ -93,10 +102,7 @@ class CombineChartFragment : Fragment() {
             setDrawGridLines(false)
             axisMinimum = 0f
         }
-        val label = ArrayList<String>()
-        for (i in 0..5){
-            label.add(listData.get(i).key)
-        }
+
         val axis = binding.combinedChart.xAxis
         axis.apply {
             position = XAxis.XAxisPosition.BOTTOM

@@ -21,6 +21,7 @@ import com.systudio.datacovid19.databinding.FragmentBarchartBinding
 import com.systudio.datacovid19.databinding.FragmentPieChartBinding
 import com.systudio.datacovid19.model.ListData
 import com.systudio.datacovid19.utils.MainViewModel
+import com.systudio.datacovid19.utils.marker.PieChartMarker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_bar_chart.*
 import kotlinx.android.synthetic.main.custom_totaldata_chart.*
@@ -60,7 +61,9 @@ class PieChartFragment : Fragment() {
         viewModel.fetchAllData()
     }
 
-    private fun setupPieCharts(entries: List<PieEntry>,color: ArrayList<Int>){
+    private fun setupPieCharts(entries: List<PieEntry>,color: ArrayList<Int>,label: ArrayList<String>){
+        val markerView = PieChartMarker(requireContext(),R.layout.custom_marker_view,label)
+        Log.d("labelsize", "setupPieCharts: "+label.size)
         val dataSet = PieDataSet(entries,"")
         dataSet.apply {
             setDrawIcons(false)
@@ -70,11 +73,15 @@ class PieChartFragment : Fragment() {
             colors = color
         }
         val pieChart = binding.piechart
+
         pieChart.apply {
             description.isEnabled = false
+            isDrawHoleEnabled = true
+            setDrawSlicesUnderHole(false)
+            setDrawRoundedSlices(false)
             setExtraOffsets(5f,10f,5f,5f)
             dragDecelerationFrictionCoef = 0.95f
-            centerText = "Kasus"
+            centerText = "Jumlah Kasus"
             setCenterTextColor(Color.BLACK)
             setDrawCenterText(true)
             holeRadius = 58f
@@ -90,6 +97,7 @@ class PieChartFragment : Fragment() {
             setTransparentCircleAlpha(110)
             minAngleForSlices = 20f
             setTransparentCircleColor(Color.WHITE)
+            marker = markerView
             invalidate()
             setupFilterBtn()
         }
@@ -119,6 +127,8 @@ class PieChartFragment : Fragment() {
         val filterCondition = ArrayList<ArrayList<Float>>()
         val color = ArrayList<Int>()
         val filterColor = ArrayList<Int>()
+        val labelList = ArrayList<String>()
+        val filterLabel = ArrayList<String>()
 
         var totalTreated = 0f
         var totalRecovered = 0f
@@ -142,17 +152,25 @@ class PieChartFragment : Fragment() {
         color.add(Color.RED)
         color.add(Color.BLUE)
 
+        labelList.add("Total Sembuh")
+        labelList.add("Total Meninggal")
+        labelList.add("Total Dirawat")
+
         if (removeIndex.size > 0){
             if (removeIndex.size != conditionalList.size){
                 for (index in removeIndex){
                     filterCondition.add(conditionalList[index])
                     filterColor.add(color[index])
+                    filterLabel.add(labelList[index])
                 }
                 for (filterIndex in filterCondition){
                     conditionalList.remove(filterIndex)
                 }
                 for (colors in filterColor){
                     color.remove(colors)
+                }
+                for (label in filterLabel){
+                    labelList.remove(label)
                 }
             }
         }
@@ -161,7 +179,7 @@ class PieChartFragment : Fragment() {
                 val values = conditionalList[x][0]
                 pieEntry.add(PieEntry(values))
             }
-            setupPieCharts(pieEntry,color)
+            setupPieCharts(pieEntry,color,labelList)
         } else {
             binding.piechart.clear()
             binding.piechart.setNoDataTextColor(Color.BLACK)
