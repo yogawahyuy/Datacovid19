@@ -84,6 +84,7 @@ class CombineChartFragment : Fragment() {
             setTouchEnabled(true)
             setPinchZoom(true)
             isDragXEnabled = true
+            animateY(2000)
             legend.isEnabled = false
             data = combinedata
             marker = markerView
