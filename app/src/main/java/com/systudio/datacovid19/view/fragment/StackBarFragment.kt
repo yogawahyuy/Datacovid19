@@ -10,7 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.setMargins
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.components.XAxis
@@ -32,6 +34,8 @@ import com.systudio.datacovid19.utils.marker.BarChartMarkerView
 import com.systudio.datacovid19.utils.marker.StackBarChartMarker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_bar_chart.*
+import kotlinx.android.synthetic.main.custom_alert_dialog.*
+import kotlinx.android.synthetic.main.custom_alert_dialog.view.*
 import kotlinx.android.synthetic.main.custom_legend_filter.*
 import kotlinx.android.synthetic.main.layout_stackbar_chart.*
 import kotlinx.android.synthetic.main.layout_stackbar_chart.view.*
@@ -61,6 +65,7 @@ class StackBarFragment : Fragment(){
         // Inflate the layout for this fragment
         _binding = FragmentStackBarBinding.inflate(inflater,container,false)
         initVm()
+
         return binding.root
     }
 
@@ -91,8 +96,8 @@ class StackBarFragment : Fragment(){
             data = BarData(dataset)
             marker = markerView
             invalidate()
-
             setupFilterBtn()
+
         }
         val xAxis = binding.stackbarchart.xAxis
         xAxis.apply {
@@ -120,6 +125,7 @@ class StackBarFragment : Fragment(){
             setDrawAxisLine(false)
         }
         setupTopValue()
+        setupTextViewDialog()
     }
 
     private fun dataProcess(){
@@ -184,20 +190,37 @@ class StackBarFragment : Fragment(){
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
-        param.setMargins(30,10,10,10)
+        param.setMargins(20,10,10,10)
         for (i in 0..5) {
             val number = listData.get(i).jumlah_kasis
             myTextView.add(TextView(requireContext()))
             myTextView[i].text = formatNumber(number)
-            myTextView[i].textSize = 8f
+            myTextView[i].textSize = 10f
             myTextView.get(i).layoutParams = param
             myTextView[i].typeface = Typeface.DEFAULT
             myTextView[i].setTextColor(Color.BLACK)
             binding.linStackTotaldata.addView(myTextView[i])
             //Log.d("stackbar dataproses", "dataProces: i"+i)
         }
+
+
     }
 
+    private fun setupTextViewDialog(){
+        var totalData = 0
+        var totalSembuh = 0
+        var totalDirawat = 0
+        var totalMeninggal = 0
+        myTextView.get(0).setOnClickListener {
+            val key = listData.get(0).key
+            totalData = listData.get(0).jumlah_kasis
+            totalSembuh = listData.get(0).jumlah_sembuh
+            totalDirawat = listData.get(0).jumlah_dirawat
+            totalMeninggal = listData.get(0).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        Log.d("setupclick", "setupTextViewDialog: "+myTextView.get(1).text)
+    }
     private fun setupFilterBtn(){
         binding.linSembuhStack.setOnClickListener {
             if (!removeIndex.contains(0)){
@@ -232,7 +255,6 @@ class StackBarFragment : Fragment(){
         }
     }
 
-
     private fun formatNumber(number: Int): String {
         if (number >= 1000000){
             val formatter = DecimalFormat("#,###.#")
@@ -244,5 +266,20 @@ class StackBarFragment : Fragment(){
 
     }
 
+    private fun dialogTextTotal(key: String,totalData: Int, totalSembuh: Int, totalDirawat: Int, totalMeninggal: Int){
+        val dialogView = layoutInflater.inflate(R.layout.custom_alert_dialog,null)
+        val builder = AlertDialog.Builder(requireContext())
+
+        dialogView.alert_tv_totaldata.text = totalData.toString()
+        dialogView.alert_tv_totalsembuh.text = totalSembuh.toString()
+        dialogView.alert_tv_totaldirawat.text = totalDirawat.toString()
+        dialogView.alert_tv_totalmeninggal.text = totalMeninggal.toString()
+        builder.apply {
+            setView(dialogView)
+            setTitle(key)
+//            setNegativeButton("Tutup", })
+        }
+        builder.show()
+    }
 
 }

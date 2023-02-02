@@ -103,6 +103,7 @@ class LineChartFragment : Fragment(), OnChartValueSelectedListener {
             granularity = 2f
             position = XAxis.XAxisPosition.BOTTOM
             setDrawGridLines(false)
+            textSize = 11f
             valueFormatter = IndexAxisValueFormatter(label)
         }
         val leftAxis = binding.lineChart.axisLeft

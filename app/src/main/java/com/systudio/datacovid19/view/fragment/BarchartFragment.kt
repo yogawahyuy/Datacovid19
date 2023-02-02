@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.marginStart
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.components.XAxis
@@ -110,18 +111,27 @@ class BarchartFragment : Fragment() {
             LayoutParams.WRAP_CONTENT,
             LayoutParams.WRAP_CONTENT
         )
-        param.setMargins(30,10,10,10)
+        param.setMargins(18,10,10,10)
         for (i in 0..5) {
             val number = listData.get(i).jumlah_kasis
             myTextView.add(TextView(requireContext()))
             myTextView[i].text = formatNumber(number)
-            myTextView[i].textSize = 8f
+            myTextView[i].textSize = 10f
             myTextView.get(i).layoutParams = param
             myTextView[i].typeface = Typeface.DEFAULT
             myTextView[i].setTextColor(Color.BLACK)
+            myTextView[i].setOnClickListener { dialogTextTotal() }
             binding.linTopValue.addView(myTextView[i])
         }
         Log.d("barchart", "setupTopValue: "+myTextView.size)
+    }
+
+    private fun dialogTextTotal(){
+        val dialogView = layoutInflater.inflate(R.layout.custom_alert_dialog,null)
+        val builder = AlertDialog.Builder(requireContext())
+
+        builder.setView(dialogView)
+        builder.show()
     }
 
     private fun formatNumber(number: Int): String {

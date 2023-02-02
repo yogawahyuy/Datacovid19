@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/alert_total"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="16dp">
+        <TextView
+            android:id="@+id/alert_tv_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Kasus : "
+            />
+        <TextView
+            android:id="@+id/alert_tv_totaldata"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.000.000"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/alert_sembuh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="16dp">
+        <TextView
+            android:id="@+id/alert_tv_sembuh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Sembuh : "
+            />
+        <TextView
+            android:id="@+id/alert_tv_totalsembuh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.000.000"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/alert_dirawat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="16dp">
+        <TextView
+            android:id="@+id/alert_tv_dirawat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Dirawat : "
+            />
+        <TextView
+            android:id="@+id/alert_tv_totaldirawat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.000.000"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/alert_meninggal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="16dp">
+        <TextView
+            android:id="@+id/alert_tv_meninggal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total Meninggal : "
+            />
+        <TextView
+            android:id="@+id/alert_tv_totalmeninggal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1.000.000"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

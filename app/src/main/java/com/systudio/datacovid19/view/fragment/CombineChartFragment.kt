@@ -108,6 +108,7 @@ class CombineChartFragment : Fragment() {
         axis.apply {
             position = XAxis.XAxisPosition.BOTTOM
             granularity = 2f
+            textSize = 11f
             setDrawGridLines(false)
             axis.valueFormatter = IndexAxisValueFormatter(label)
             axisMinimum = combinedata.xMin - 0.5f
@@ -181,12 +182,12 @@ class CombineChartFragment : Fragment() {
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
-        param.setMargins(30,10,10,10)
+        param.setMargins(18,10,10,10)
         for (i in 0..5){
             val number = listData.get(i).jumlah_kasis
             myTextView.add(TextView(requireContext()))
             myTextView[i].text = formatNumber(number)
-            myTextView[i].textSize = 8f
+            myTextView[i].textSize = 10f
             myTextView[i].typeface = Typeface.DEFAULT
             myTextView[i].setTextColor(Color.BLACK)
             myTextView.get(i).layoutParams = param
