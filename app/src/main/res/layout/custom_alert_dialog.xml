@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginStart="16dp">
+        android:layout_marginStart="24dp">
         <TextView
             android:id="@+id/alert_tv_total"
             android:layout_width="wrap_content"
@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginStart="16dp">
+        android:layout_marginStart="24dp">
         <TextView
             android:id="@+id/alert_tv_sembuh"
             android:layout_width="wrap_content"
@@ -49,7 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginStart="16dp">
+        android:layout_marginStart="24dp">
         <TextView
             android:id="@+id/alert_tv_dirawat"
             android:layout_width="wrap_content"
@@ -69,7 +69,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginStart="16dp">
+        android:layout_marginStart="24dp">
         <TextView
             android:id="@+id/alert_tv_meninggal"
             android:layout_width="wrap_content"

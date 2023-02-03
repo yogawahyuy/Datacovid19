@@ -49,6 +49,15 @@
                 android:visibility="visible"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
+            <TextView
+                android:id="@+id/tv_nodata"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No chart data available."
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:textColor="@android:color/black"
+                android:visibility="gone"/>
             <RelativeLayout
                 android:id="@+id/rel_custom_legend"
                 android:layout_alignParentBottom="true"

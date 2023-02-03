@@ -1,6 +1,7 @@
 package com.systudio.datacovid19.view.fragment
 
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -30,6 +31,7 @@ import com.systudio.datacovid19.utils.MyAxisValueFormatter
 import com.systudio.datacovid19.utils.marker.BarChartMarkerView
 import kotlinx.android.synthetic.main.activity_bar_chart.*
 import kotlinx.android.synthetic.main.activity_bar_chart.barchart
+import kotlinx.android.synthetic.main.custom_alert_dialog.view.*
 import kotlinx.android.synthetic.main.fragment_barchart.*
 import java.text.DecimalFormat
 
@@ -64,7 +66,7 @@ class BarchartFragment : Fragment() {
                 setupTopValue()
             }else{
                 binding.cardviewBarchart.visibility = View.GONE
-                binding.nointernet.relNointernet.visibility = View.VISIBLE
+               // binding.nointernet.relNointernet.visibility = View.VISIBLE
             }
         }
         viewModel.fetchAllData()
@@ -93,6 +95,7 @@ class BarchartFragment : Fragment() {
             valueFormatter = IndexAxisValueFormatter(label)
         }
         //setupTopValue()
+
     }
 
     private fun dataProses(){
@@ -120,17 +123,78 @@ class BarchartFragment : Fragment() {
             myTextView.get(i).layoutParams = param
             myTextView[i].typeface = Typeface.DEFAULT
             myTextView[i].setTextColor(Color.BLACK)
-            myTextView[i].setOnClickListener { dialogTextTotal() }
             binding.linTopValue.addView(myTextView[i])
         }
         Log.d("barchart", "setupTopValue: "+myTextView.size)
+        setupTextViewDialog()
     }
 
-    private fun dialogTextTotal(){
+    private fun setupTextViewDialog(){
+        myTextView.get(0).setOnClickListener {
+            val key = listData.get(0).key
+            val totalData = listData.get(0).jumlah_kasis
+            val totalSembuh = listData.get(0).jumlah_sembuh
+            val totalDirawat = listData.get(0).jumlah_dirawat
+            val totalMeninggal = listData.get(0).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(1).setOnClickListener {
+            val key = listData.get(1).key
+            val totalData = listData.get(1).jumlah_kasis
+            val totalSembuh = listData.get(1).jumlah_sembuh
+            val totalDirawat = listData.get(1).jumlah_dirawat
+            val totalMeninggal = listData.get(1).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(2).setOnClickListener {
+            val key = listData.get(2).key
+            val totalData = listData.get(2).jumlah_kasis
+            val totalSembuh = listData.get(2).jumlah_sembuh
+            val totalDirawat = listData.get(2).jumlah_dirawat
+            val totalMeninggal = listData.get(2).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(3).setOnClickListener {
+            val key = listData.get(3).key
+            val totalData = listData.get(3).jumlah_kasis
+            val totalSembuh = listData.get(3).jumlah_sembuh
+            val totalDirawat = listData.get(3).jumlah_dirawat
+            val totalMeninggal = listData.get(3).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(4).setOnClickListener {
+            val key = listData.get(4).key
+            val totalData = listData.get(4).jumlah_kasis
+            val totalSembuh = listData.get(4).jumlah_sembuh
+            val totalDirawat = listData.get(4).jumlah_dirawat
+            val totalMeninggal = listData.get(4).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(5).setOnClickListener {
+            val key = listData.get(5).key
+            val totalData = listData.get(5).jumlah_kasis
+            val totalSembuh = listData.get(5).jumlah_sembuh
+            val totalDirawat = listData.get(5).jumlah_dirawat
+            val totalMeninggal = listData.get(5).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        Log.d("setupclick", "setupTextViewDialog: "+myTextView.get(1).text)
+    }
+    private fun dialogTextTotal(key: String,totalData: Int, totalSembuh: Int, totalDirawat: Int, totalMeninggal: Int){
         val dialogView = layoutInflater.inflate(R.layout.custom_alert_dialog,null)
         val builder = AlertDialog.Builder(requireContext())
 
-        builder.setView(dialogView)
+        dialogView.alert_tv_totaldata.text = totalData.toString()
+        dialogView.alert_tv_totalsembuh.text = totalSembuh.toString()
+        dialogView.alert_tv_totaldirawat.text = totalDirawat.toString()
+        dialogView.alert_tv_totalmeninggal.text = totalMeninggal.toString()
+        builder.apply {
+            setView(dialogView)
+            setTitle(key)
+            setNegativeButton("Tutup",DialogInterface.OnClickListener { dialogInterface, i ->
+                dialogInterface.dismiss()
+            })
+        }
         builder.show()
     }
 

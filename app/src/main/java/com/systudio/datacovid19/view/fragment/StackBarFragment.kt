@@ -1,5 +1,6 @@
 package com.systudio.datacovid19.view.fragment
 
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
@@ -177,10 +178,12 @@ class StackBarFragment : Fragment(){
                 barEntry.add(BarEntry(x.toFloat(),values))
             }
             setupStackBarChart(barEntry,colors,cityList)
+            binding.linStackTotaldata.visibility = View.VISIBLE
         }else{
             binding.stackbarchart.clear()
             binding.stackbarchart.setNoDataTextColor(Color.BLACK)
             binding.stackbarchart.invalidate()
+            binding.linStackTotaldata.visibility = View.GONE
         }
     }
 
@@ -207,16 +210,52 @@ class StackBarFragment : Fragment(){
     }
 
     private fun setupTextViewDialog(){
-        var totalData = 0
-        var totalSembuh = 0
-        var totalDirawat = 0
-        var totalMeninggal = 0
         myTextView.get(0).setOnClickListener {
             val key = listData.get(0).key
-            totalData = listData.get(0).jumlah_kasis
-            totalSembuh = listData.get(0).jumlah_sembuh
-            totalDirawat = listData.get(0).jumlah_dirawat
-            totalMeninggal = listData.get(0).jumlah_meninggal
+            val totalData = listData.get(0).jumlah_kasis
+            val totalSembuh = listData.get(0).jumlah_sembuh
+            val totalDirawat = listData.get(0).jumlah_dirawat
+            val totalMeninggal = listData.get(0).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(1).setOnClickListener {
+            val key = listData.get(1).key
+            val totalData = listData.get(1).jumlah_kasis
+            val totalSembuh = listData.get(1).jumlah_sembuh
+            val totalDirawat = listData.get(1).jumlah_dirawat
+            val totalMeninggal = listData.get(1).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(2).setOnClickListener {
+            val key = listData.get(2).key
+            val totalData = listData.get(2).jumlah_kasis
+            val totalSembuh = listData.get(2).jumlah_sembuh
+            val totalDirawat = listData.get(2).jumlah_dirawat
+            val totalMeninggal = listData.get(2).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(3).setOnClickListener {
+            val key = listData.get(3).key
+            val totalData = listData.get(3).jumlah_kasis
+            val totalSembuh = listData.get(3).jumlah_sembuh
+            val totalDirawat = listData.get(3).jumlah_dirawat
+            val totalMeninggal = listData.get(3).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(4).setOnClickListener {
+            val key = listData.get(4).key
+            val totalData = listData.get(4).jumlah_kasis
+            val totalSembuh = listData.get(4).jumlah_sembuh
+            val totalDirawat = listData.get(4).jumlah_dirawat
+            val totalMeninggal = listData.get(4).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(5).setOnClickListener {
+            val key = listData.get(5).key
+            val totalData = listData.get(5).jumlah_kasis
+            val totalSembuh = listData.get(5).jumlah_sembuh
+            val totalDirawat = listData.get(5).jumlah_dirawat
+            val totalMeninggal = listData.get(5).jumlah_meninggal
             dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
         }
         Log.d("setupclick", "setupTextViewDialog: "+myTextView.get(1).text)
@@ -277,7 +316,9 @@ class StackBarFragment : Fragment(){
         builder.apply {
             setView(dialogView)
             setTitle(key)
-//            setNegativeButton("Tutup", })
+            setNegativeButton("Tutup", DialogInterface.OnClickListener { dialogInterface, i ->
+                dialogInterface.dismiss()
+            })
         }
         builder.show()
     }

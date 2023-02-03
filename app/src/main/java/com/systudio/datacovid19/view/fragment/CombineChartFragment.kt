@@ -1,15 +1,18 @@
 package com.systudio.datacovid19.view.fragment
 
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.components.IMarker
 import com.github.mikephil.charting.components.Legend
@@ -24,8 +27,14 @@ import com.systudio.datacovid19.utils.MainViewModel
 import com.systudio.datacovid19.utils.marker.BarChartMarkerView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_bar_chart.*
+import kotlinx.android.synthetic.main.custom_alert_dialog.view.*
+import kotlinx.android.synthetic.main.fragment_combine_chart.view.*
+import kotlinx.android.synthetic.main.fragment_line_chart.view.*
+import kotlinx.android.synthetic.main.fragment_line_chart.view.tv_nodata
 import kotlinx.android.synthetic.main.layout_combine_chart.*
 import kotlinx.android.synthetic.main.layout_combine_chart.view.*
+import kotlinx.android.synthetic.main.layout_combine_chart.view.combinedChart
+import kotlinx.android.synthetic.main.layout_line_chart.view.*
 import java.text.DecimalFormat
 
 
@@ -39,6 +48,8 @@ class CombineChartFragment : Fragment() {
     private var _binding : FragmentCombineChartBinding? = null
     private val binding get() = _binding!!
     lateinit var listData: List<ListData>
+    lateinit var myTextView : ArrayList<TextView>
+    private val removeIndex = arrayListOf<Int>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -116,6 +127,7 @@ class CombineChartFragment : Fragment() {
         }
 
         setupTopValue()
+        setupTextViewDialog()
     }
 
     private fun generateLineData() : LineData {
@@ -177,7 +189,7 @@ class CombineChartFragment : Fragment() {
     }
 
     private fun setupTopValue(){
-        val myTextView = arrayListOf<TextView>()
+        myTextView = ArrayList()
         val param = LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
@@ -198,93 +210,105 @@ class CombineChartFragment : Fragment() {
     private fun setupLineBtn(sembuhLineDataset: LineDataSet,dirawatLineDataSet: LineDataSet,meninggalLineDataset: LineDataSet){
         var sembuhState = 0
         binding.linCombineSembuh.setOnClickListener {
-            if (sembuhState==0){
+            if (!removeIndex.contains(0)){
                 sembuhLineDataset.isVisible = false
                 binding.combinedChart.invalidate()
                 binding.sembuhTvCombine.paintFlags = binding.sembuhTvCombine.paintFlags  or (Paint.STRIKE_THRU_TEXT_FLAG)
                 sembuhState = 1
+                removeIndex.add(0)
             }else{
                 sembuhLineDataset.isVisible = true
                 combinedChart.invalidate()
                 binding.sembuhTvCombine.paintFlags = binding.sembuhTvCombine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
                 sembuhState = 0
+                removeIndex.remove(0)
             }
-
-            var stateDirawat = 0
-            binding.linCombineDirawat.setOnClickListener {
-                if (stateDirawat==0){
-                    dirawatLineDataSet.isVisible = false
-                    binding.combinedChart.invalidate()
-                    binding.dirawatTvCombine.paintFlags = binding.dirawatTvCombine.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
-                    stateDirawat = 1
-                }else{
-                    dirawatLineDataSet.isVisible = true
-                    binding.combinedChart.invalidate()
-                    binding.dirawatTvCombine.paintFlags = binding.dirawatTvCombine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
-                    stateDirawat = 0
-                }
-            }
-            var stateMeninggal = 0
-            binding.linCombineMeninggal.setOnClickListener {
-                if (stateMeninggal == 0) {
-                    meninggalLineDataset.isVisible = false
-                    binding.combinedChart.invalidate()
-                    binding.meninggalTvCombine.paintFlags =
-                        binding.meninggalTvCombine.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
-                    stateMeninggal = 1
-                } else {
-                    meninggalLineDataset.isVisible = true
-                    binding.combinedChart.invalidate()
-                    binding.meninggalTvCombine.paintFlags =
-                        binding.meninggalTvCombine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
-                    stateMeninggal = 0
-                }
+            if (removeIndex.contains(0) && removeIndex.contains(1) && removeIndex.contains(2)&& removeIndex.contains(3)){
+                binding.relLayCombineChart.com_tv_nodata.visibility = View.VISIBLE
+                binding.relLayCombineChart.combinedChart.visibility = View.GONE
+                binding.linCombineTotaldata.visibility = View.GONE
+            }else{
+                binding.relLayCombineChart.com_tv_nodata.visibility = View.GONE
+                binding.relLayCombineChart.combinedChart.visibility = View.VISIBLE
+                binding.linCombineTotaldata.visibility = View.VISIBLE
             }
         }
         var stateDirawat = 0
         binding.linCombineDirawat.setOnClickListener {
-            if (stateDirawat==0){
+            if (!removeIndex.contains(1)){
                 dirawatLineDataSet.isVisible = false
                 binding.combinedChart.invalidate()
                 binding.dirawatTvCombine.paintFlags = binding.dirawatTvCombine.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
                 stateDirawat = 1
+                removeIndex.add(1)
             }else{
                 dirawatLineDataSet.isVisible = true
                 binding.combinedChart.invalidate()
                 binding.dirawatTvCombine.paintFlags = binding.dirawatTvCombine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
                 stateDirawat = 0
+                removeIndex.remove(1)
+            }
+            if (removeIndex.contains(0) && removeIndex.contains(1) && removeIndex.contains(2)&& removeIndex.contains(3)){
+                binding.relLayCombineChart.com_tv_nodata.visibility = View.VISIBLE
+                binding.relLayCombineChart.combinedChart.visibility = View.GONE
+                binding.linCombineTotaldata.visibility = View.GONE
+            }else{
+                binding.relLayCombineChart.com_tv_nodata.visibility = View.GONE
+                binding.relLayCombineChart.combinedChart.visibility = View.VISIBLE
+                binding.linCombineTotaldata.visibility = View.VISIBLE
             }
         }
         var stateMeninggal = 0
         binding.linCombineMeninggal.setOnClickListener {
-            if (stateMeninggal==0){
+            if (!removeIndex.contains(2)) {
                 meninggalLineDataset.isVisible = false
                 binding.combinedChart.invalidate()
                 binding.meninggalTvCombine.paintFlags = binding.meninggalTvCombine.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
                 stateMeninggal = 1
-            }else{
+                removeIndex.add(2)
+            } else {
                 meninggalLineDataset.isVisible = true
                 binding.combinedChart.invalidate()
                 binding.meninggalTvCombine.paintFlags = binding.meninggalTvCombine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
                 stateMeninggal = 0
+                removeIndex.remove(2)
+            }
+            if (removeIndex.contains(0) && removeIndex.contains(1) && removeIndex.contains(2)&& removeIndex.contains(3)){
+                binding.relLayCombineChart.com_tv_nodata.visibility = View.VISIBLE
+                binding.relLayCombineChart.combinedChart.visibility = View.GONE
+                binding.linCombineTotaldata.visibility = View.GONE
+            }else{
+                binding.relLayCombineChart.com_tv_nodata.visibility = View.GONE
+                binding.relLayCombineChart.combinedChart.visibility = View.VISIBLE
+                binding.linCombineTotaldata.visibility = View.VISIBLE
             }
         }
-
     }
 
     private fun setupBarBtn(barDataSet: BarDataSet){
         var stateKasus = 0
         binding.linCombineTotalkasus.setOnClickListener {
-            if (stateKasus==0){
+            if (!removeIndex.contains(3)){
                 barDataSet.isVisible = false
                 binding.combinedChart.invalidate()
                 binding.kasustvCombine.paintFlags = binding.kasustvCombine.paintFlags or (Paint.STRIKE_THRU_TEXT_FLAG)
                 stateKasus = 1
+                removeIndex.add(3)
             }else {
                 barDataSet.isVisible = true
                 binding.combinedChart.invalidate()
                 binding.kasustvCombine.paintFlags = binding.kasustvCombine.paintFlags and (Paint.ANTI_ALIAS_FLAG)
                 stateKasus = 0
+                removeIndex.remove(3)
+            }
+            if (removeIndex.contains(0) && removeIndex.contains(1) && removeIndex.contains(2)&& removeIndex.contains(3)){
+                binding.relLayCombineChart.com_tv_nodata.visibility = View.VISIBLE
+                binding.relLayCombineChart.combinedChart.visibility = View.GONE
+                binding.linCombineTotaldata.visibility = View.GONE
+            }else{
+                binding.relLayCombineChart.com_tv_nodata.visibility = View.GONE
+                binding.relLayCombineChart.combinedChart.visibility = View.VISIBLE
+                binding.linCombineTotaldata.visibility = View.VISIBLE
             }
         }
     }
@@ -298,6 +322,75 @@ class CombineChartFragment : Fragment() {
             return formatter.format(number / 1000.0) +"K"
         }
 
+    }
+
+    private fun setupTextViewDialog(){
+        myTextView.get(0).setOnClickListener {
+            val key = listData.get(0).key
+            val totalData = listData.get(0).jumlah_kasis
+            val totalSembuh = listData.get(0).jumlah_sembuh
+            val totalDirawat = listData.get(0).jumlah_dirawat
+            val totalMeninggal = listData.get(0).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(1).setOnClickListener {
+            val key = listData.get(1).key
+            val totalData = listData.get(1).jumlah_kasis
+            val totalSembuh = listData.get(1).jumlah_sembuh
+            val totalDirawat = listData.get(1).jumlah_dirawat
+            val totalMeninggal = listData.get(1).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(2).setOnClickListener {
+            val key = listData.get(2).key
+            val totalData = listData.get(2).jumlah_kasis
+            val totalSembuh = listData.get(2).jumlah_sembuh
+            val totalDirawat = listData.get(2).jumlah_dirawat
+            val totalMeninggal = listData.get(2).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(3).setOnClickListener {
+            val key = listData.get(3).key
+            val totalData = listData.get(3).jumlah_kasis
+            val totalSembuh = listData.get(3).jumlah_sembuh
+            val totalDirawat = listData.get(3).jumlah_dirawat
+            val totalMeninggal = listData.get(3).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(4).setOnClickListener {
+            val key = listData.get(4).key
+            val totalData = listData.get(4).jumlah_kasis
+            val totalSembuh = listData.get(4).jumlah_sembuh
+            val totalDirawat = listData.get(4).jumlah_dirawat
+            val totalMeninggal = listData.get(4).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        myTextView.get(5).setOnClickListener {
+            val key = listData.get(5).key
+            val totalData = listData.get(5).jumlah_kasis
+            val totalSembuh = listData.get(5).jumlah_sembuh
+            val totalDirawat = listData.get(5).jumlah_dirawat
+            val totalMeninggal = listData.get(5).jumlah_meninggal
+            dialogTextTotal(key,totalData, totalSembuh, totalDirawat, totalMeninggal)
+        }
+        Log.d("setupclick", "setupTextViewDialog: "+myTextView.get(1).text)
+    }
+    private fun dialogTextTotal(key: String,totalData: Int, totalSembuh: Int, totalDirawat: Int, totalMeninggal: Int){
+        val dialogView = layoutInflater.inflate(R.layout.custom_alert_dialog,null)
+        val builder = AlertDialog.Builder(requireContext())
+
+        dialogView.alert_tv_totaldata.text = totalData.toString()
+        dialogView.alert_tv_totalsembuh.text = totalSembuh.toString()
+        dialogView.alert_tv_totaldirawat.text = totalDirawat.toString()
+        dialogView.alert_tv_totalmeninggal.text = totalMeninggal.toString()
+        builder.apply {
+            setView(dialogView)
+            setTitle(key)
+            setNegativeButton("Tutup", DialogInterface.OnClickListener { dialogInterface, i ->
+                dialogInterface.dismiss()
+            })
+        }
+        builder.show()
     }
 
 
