@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.Legend
@@ -40,6 +41,7 @@ class PieChartFragment : Fragment() {
     private val binding get() = _binding!!
     private val removeIndex = ArrayList<Int>()
     lateinit var listData: List<ListData>
+    private val viewModel: MainViewModel by hiltNavGraphViewModels(R.id.main_navigation)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,8 +51,12 @@ class PieChartFragment : Fragment() {
         initVm()
         return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        initVm()
+        super.onViewCreated(view, savedInstanceState)
+    }
     private fun initVm(){
-        val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         viewModel.fetchLiveData().observe(viewLifecycleOwner) {
             if (it != null) {
                 //setupPieChart(it)
@@ -58,7 +64,6 @@ class PieChartFragment : Fragment() {
                 dataProces()
             }
         }
-        viewModel.fetchAllData()
     }
 
     private fun setupPieCharts(entries: List<PieEntry>,color: ArrayList<Int>,label: ArrayList<String>){

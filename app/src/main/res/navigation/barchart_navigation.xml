@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/barchart_navigation"
+    app:startDestination="@id/barchartFragment">
+
+    <fragment
+        android:id="@+id/barchartFragment"
+        android:name="com.systudio.datacovid19.view.fragment.BarchartFragment"
+        android:label="fragment_barchart"
+        tools:layout="@layout/fragment_barchart" >
+        <action
+            android:id="@+id/action_bar_chart"
+            app:popUpToSaveState="true"
+            app:popUpToInclusive="false"/>
+    </fragment>
+</navigation>

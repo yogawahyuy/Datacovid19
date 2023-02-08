@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -46,19 +47,23 @@ class LineChartFragment : Fragment(), OnChartValueSelectedListener {
     private val binding get() = _binding!!
     private lateinit var listData: List<ListData>
     private val removeIndex = arrayListOf<Int>()
-
+    private val viewModel: MainViewModel by hiltNavGraphViewModels(R.id.main_navigation)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentLineChartBinding.inflate(layoutInflater,container,false)
-        initVm()
+        //initVm()
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        initVm()
+        super.onViewCreated(view, savedInstanceState)
+    }
+
     private fun initVm(){
-        val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         viewModel.fetchLiveData().observe(viewLifecycleOwner) {
             if (it != null) {
                 listData = it
@@ -69,7 +74,7 @@ class LineChartFragment : Fragment(), OnChartValueSelectedListener {
                 binding.nointernet.relNointernet.visibility = View.VISIBLE
             }
         }
-        viewModel.fetchAllData()
+        //viewModel.fetchAllData()
     }
 
     private fun setupLineChart(entriesSembuh : List<Entry>,entriesDirawat: List<Entry>,entriesMeninggal: List<Entry>,label: List<String>){

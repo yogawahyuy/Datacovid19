@@ -14,6 +14,7 @@ class MainViewModel @Inject constructor(val mainRepository: MainRepository):View
         liveDataAll= MutableLiveData()
     }
     fun fetchLiveData():MutableLiveData<List<ListData>>{
+        mainRepository.getData(liveDataAll)
         return liveDataAll
     }
     fun fetchAllData(){

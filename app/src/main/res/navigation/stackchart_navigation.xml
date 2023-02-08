@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/stackchart_navigation"
+    app:startDestination="@id/stackBarFragment">
+
+    <fragment
+        android:id="@+id/stackBarFragment"
+        android:name="com.systudio.datacovid19.view.fragment.StackBarFragment"
+        android:label="fragment_stack_bar"
+        tools:layout="@layout/fragment_stack_bar" />
+</navigation>

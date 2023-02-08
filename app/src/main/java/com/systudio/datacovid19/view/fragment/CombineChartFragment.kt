@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.components.IMarker
 import com.github.mikephil.charting.components.Legend
@@ -50,18 +51,23 @@ class CombineChartFragment : Fragment() {
     lateinit var listData: List<ListData>
     lateinit var myTextView : ArrayList<TextView>
     private val removeIndex = arrayListOf<Int>()
+    private val viewModel: MainViewModel by hiltNavGraphViewModels(R.id.main_navigation)
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentCombineChartBinding.inflate(inflater,container,false)
-        initVm()
+        //initVm()
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        initVm()
+        super.onViewCreated(view, savedInstanceState)
+    }
     private fun initVm(){
-        val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
         viewModel.fetchLiveData().observe(viewLifecycleOwner) {
             if (it != null) {
                 //setupCombinedChart(it)
@@ -73,7 +79,7 @@ class CombineChartFragment : Fragment() {
                 binding.nointernet.relNointernet.visibility = View.VISIBLE
             }
         }
-        viewModel.fetchAllData()
+        //viewModel.fetchAllData()
     }
 
     private fun setupCombinedChart(){

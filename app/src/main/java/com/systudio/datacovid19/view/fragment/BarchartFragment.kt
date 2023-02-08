@@ -13,9 +13,17 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.marginStart
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.commit
+import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.navGraphViewModels
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -29,6 +37,8 @@ import com.systudio.datacovid19.model.ListData
 import com.systudio.datacovid19.utils.MainViewModel
 import com.systudio.datacovid19.utils.MyAxisValueFormatter
 import com.systudio.datacovid19.utils.marker.BarChartMarkerView
+import com.systudio.datacovid19.view.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_bar_chart.*
 import kotlinx.android.synthetic.main.activity_bar_chart.barchart
 import kotlinx.android.synthetic.main.custom_alert_dialog.view.*
@@ -40,26 +50,64 @@ import java.text.DecimalFormat
  * Use the [BarchartFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 class BarchartFragment : Fragment() {
 
     private var _binding : FragmentBarchartBinding? = null
     private val binding get() = _binding!!
     lateinit var myTextView: ArrayList<TextView>
     private lateinit var listData: List<ListData>
+    private var activity: MainActivity?=null
+    private val viewModel: MainViewModel by hiltNavGraphViewModels(R.id.main_navigation)
+    private var data : Int =0
+
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        //activity = activity
+        //initVm()
+        Toast.makeText(requireContext(),"OnCreate barchart",Toast.LENGTH_LONG).show()
+        //viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+
+        super.onCreate(savedInstanceState)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentBarchartBinding.inflate(inflater,container,false)
-        initVm()
+        //initVm()
+        Toast.makeText(requireContext(),"OnCreateView barchart created",Toast.LENGTH_LONG).show()
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        //initVm()
+        //dataProses()
+        //setupTopValue()
+        if (savedInstanceState!=null){
+//            childFragmentManager.commit {  }
+            Toast.makeText(requireContext(),"OnViewCreated barchart done created",Toast.LENGTH_LONG).show()
+        }else {
+            Toast.makeText(
+                requireContext(),
+                "OnViewCreated barchart done recreated",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Toast.makeText(requireContext(),"ondestroy barchart",Toast.LENGTH_SHORT).show()
+        _binding=null
+    }
 
     private fun initVm(){
-        val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
-        viewModel.fetchLiveData().observe(viewLifecycleOwner) {
+        //val viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
+        viewModel.fetchLiveData().observe(requireActivity()) {
             if (it != null) {
                 listData = it
                 dataProses()
@@ -69,7 +117,7 @@ class BarchartFragment : Fragment() {
                // binding.nointernet.relNointernet.visibility = View.VISIBLE
             }
         }
-        viewModel.fetchAllData()
+        //viewModel.fetchAllData()
     }
 
     private fun setupBarChart(entries : List<BarEntry>,label : List<String>){

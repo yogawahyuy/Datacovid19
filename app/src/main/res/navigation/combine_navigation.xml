@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/combine_navigation"
+    app:startDestination="@id/combineChartFragment">
+
+    <fragment
+        android:id="@+id/combineChartFragment"
+        android:name="com.systudio.datacovid19.view.fragment.CombineChartFragment"
+        android:label="fragment_combine_chart"
+        tools:layout="@layout/fragment_combine_chart" />
+</navigation>
