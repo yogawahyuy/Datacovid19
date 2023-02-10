@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/treemap_navigation"
+    app:startDestination="@id/treemapFragment">
+
+    <fragment
+        android:id="@+id/treemapFragment"
+        android:name="com.systudio.datacovid19.view.fragment.TreemapFragment"
+        android:label="fragment_treemap"
+        tools:layout="@layout/fragment_treemap" />
+</navigation>

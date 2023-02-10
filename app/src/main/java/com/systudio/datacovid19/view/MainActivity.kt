@@ -46,9 +46,9 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.main_bottom_navigation)
         bottomNavigationView.setupWithNavController(navController)
 
-        if (!navController.popBackStack(R.id.barchartFragment,false)){
-            navController.navigateUp()
-        }
+//        if (!navController.popBackStack(R.id.barchartFragment,false)){
+//            navController.navigateUp()
+//        }
 //
 //        appBarConfiguration = AppBarConfiguration(
 //            setOf(R.id.barchartFragment,R.id.stackBarFragment,R.id.linechart_navigation,R.id.pieChartFragment,R.id.combineChartFragment)

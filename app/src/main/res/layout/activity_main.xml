@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".view.MainActivity">
-    
-
         
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/main_fragment_nav"

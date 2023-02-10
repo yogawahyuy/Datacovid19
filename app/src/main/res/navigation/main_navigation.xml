@@ -10,6 +10,7 @@
     <include app:graph="@navigation/linechart_navigation"/>
     <include app:graph="@navigation/piechart_navigation"/>
     <include app:graph="@navigation/combine_navigation"/>
+    <include app:graph="@navigation/treemap_navigation"/>
 
 
 <!--    <fragment-->

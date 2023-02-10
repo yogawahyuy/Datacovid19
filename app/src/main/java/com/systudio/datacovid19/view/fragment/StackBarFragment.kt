@@ -74,6 +74,7 @@ class StackBarFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initVm()
+
         super.onViewCreated(view, savedInstanceState)
     }
 
@@ -82,8 +83,13 @@ class StackBarFragment : Fragment(){
             if (it != null) {
                 listData = it
                 dataProcess()
+            }else {
+                Log.d("isilistdata", "onViewCreated: listdata null")
             }
+           // Log.d("isilistdata", "onViewCreated: "+listData.size)
+
         }
+//        Log.d("isilistdata", "onViewCreated: "+listData.size)
         //viewModel.fetchAllData()
     }
 

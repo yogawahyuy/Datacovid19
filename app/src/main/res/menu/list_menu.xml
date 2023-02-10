@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/barchart_navigation" android:title="Bar Chart" android:icon="@drawable/ic_baseline_bar_chart_24" android:menuCategory="secondary"/>
+    <item android:id="@+id/barchart_navigation" android:title="Bar Chart" android:icon="@drawable/ic_baseline_bar_chart_24" />
 <!--    <item android:id="@+id/groupchartmenu" android:title="Group Chart" />-->
-    <item android:id="@+id/stackchart_navigation" android:title="Stack Bar Chart" android:icon="@drawable/ic_baseline_stacked_bar_chart_24" android:menuCategory="secondary"/>
-    <item android:id="@+id/linechart_navigation" android:title="Line Chart" android:icon="@drawable/ic_baseline_show_chart_24" android:menuCategory="secondary"/>
-    <item android:id="@+id/piechart_navigation" android:title="Pie Chart" android:icon="@drawable/ic_baseline_pie_chart_24" android:menuCategory="secondary"/>
-    <item android:id="@+id/combine_navigation" android:title="Combined Chart" android:icon="@drawable/ic_baseline_multiline_chart_24" android:menuCategory="secondary"/>
+    <item android:id="@+id/stackchart_navigation" android:title="Stack Bar Chart" android:icon="@drawable/ic_baseline_stacked_bar_chart_24" />
+    <item android:id="@+id/linechart_navigation" android:title="Line Chart" android:icon="@drawable/ic_baseline_show_chart_24" />
+<!--    <item android:id="@+id/piechart_navigation" android:title="Pie Chart" android:icon="@drawable/ic_baseline_pie_chart_24" />-->
+    <item android:id="@+id/combine_navigation" android:title="Combined Chart" android:icon="@drawable/ic_baseline_multiline_chart_24" />
+    <item android:id="@+id/treemap_navigation" android:title="Treemap" android:icon="@drawable/treemap"/>
 <!--    <item android:id="@+id/candlestickmenu" android:title="Candle Stick Chart"/>-->
 </menu>

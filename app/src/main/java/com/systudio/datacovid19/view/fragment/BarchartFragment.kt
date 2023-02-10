@@ -2,6 +2,7 @@ package com.systudio.datacovid19.view.fragment
 
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -38,11 +39,13 @@ import com.systudio.datacovid19.utils.MainViewModel
 import com.systudio.datacovid19.utils.MyAxisValueFormatter
 import com.systudio.datacovid19.utils.marker.BarChartMarkerView
 import com.systudio.datacovid19.view.MainActivity
+import com.systudio.datacovid19.view.TreeMapChartActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_bar_chart.*
 import kotlinx.android.synthetic.main.activity_bar_chart.barchart
 import kotlinx.android.synthetic.main.custom_alert_dialog.view.*
 import kotlinx.android.synthetic.main.fragment_barchart.*
+import kotlinx.android.synthetic.main.fragment_barchart.view.*
 import java.text.DecimalFormat
 
 /**
@@ -66,7 +69,7 @@ class BarchartFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         //activity = activity
         //initVm()
-        Toast.makeText(requireContext(),"OnCreate barchart",Toast.LENGTH_LONG).show()
+        //Toast.makeText(requireContext(),"OnCreate barchart",Toast.LENGTH_LONG).show()
         //viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
         super.onCreate(savedInstanceState)
@@ -78,31 +81,34 @@ class BarchartFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentBarchartBinding.inflate(inflater,container,false)
         //initVm()
-        Toast.makeText(requireContext(),"OnCreateView barchart created",Toast.LENGTH_LONG).show()
+        //Toast.makeText(requireContext(),"OnCreateView barchart created",Toast.LENGTH_LONG).show()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        //initVm()
+        initVm()
         //dataProses()
         //setupTopValue()
-        if (savedInstanceState!=null){
-//            childFragmentManager.commit {  }
-            Toast.makeText(requireContext(),"OnViewCreated barchart done created",Toast.LENGTH_LONG).show()
-        }else {
-            Toast.makeText(
-                requireContext(),
-                "OnViewCreated barchart done recreated",
-                Toast.LENGTH_LONG
-            ).show()
-        }
+//        if (savedInstanceState!=null){
+//            Toast.makeText(requireContext(),"OnViewCreated barchart done created",Toast.LENGTH_LONG).show()
+//        }else {
+//            Toast.makeText(
+//                requireContext(),
+//                "OnViewCreated barchart done recreated",
+//                Toast.LENGTH_LONG
+//            ).show()
+//        }
+//        binding.relChart.tv_to_tremap.setOnClickListener {
+//            val intent = Intent(requireContext(),TreeMapChartActivity::class.java)
+//            startActivity(intent)
+//        }
         super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Toast.makeText(requireContext(),"ondestroy barchart",Toast.LENGTH_SHORT).show()
-        _binding=null
+        //Toast.makeText(requireContext(),"ondestroy barchart",Toast.LENGTH_SHORT).show()
+        //_binding=null
     }
 
     private fun initVm(){
@@ -162,7 +168,7 @@ class BarchartFragment : Fragment() {
             LayoutParams.WRAP_CONTENT,
             LayoutParams.WRAP_CONTENT
         )
-        param.setMargins(18,10,10,10)
+        param.setMargins(20,10,10,10)
         for (i in 0..5) {
             val number = listData.get(i).jumlah_kasis
             myTextView.add(TextView(requireContext()))
